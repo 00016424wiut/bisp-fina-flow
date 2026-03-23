@@ -1,0 +1,38 @@
+{
+  "name": "@bisp-final-flow/db",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "postinstall": "prisma generate",
+    "db:studio": "prisma studio",
+    "db:start": "docker compose up -d",
+    "db:watch": "docker compose up",
+    "db:stop": "docker compose stop",
+    "db:down": "docker compose down"
+  },
+  "dependencies": {
+    "@bisp-final-flow/env": "*",
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
+    "dotenv": "^17.2.2",
+    "pg": "^8.17.1",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@bisp-final-flow/config": "*",
+    "@types/pg": "^8.16.0",
+    "prisma": "^7.2.0",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,190 @@
+model User {
+  id            String   @id
+  name          String
+  email         String
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Новые бизнес-поля
+  role             Role     @default(MANAGER)
+  companyId        String?
+  company          Company? @relation(fields: [companyId], references: [id])
+  telegramChatId   String?
+  telegramUsername String?
+
+  // Существующие связи Better-Auth
+  sessions Session[]
+  accounts Account[]
+
+  // Новые бизнес-связи
+  bookings Booking[]
+  venues   Venue[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+// ── Генератор клиента ──────────────────────────────────────
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../src/generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── COMPANY ────────────────────────────────────────────────
+// Верхний уровень. Все заказы и пользователи — внутри компании.
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users    User[]
+  bookings Booking[]
+  expenses Expense[] // для агрегации отчётов
+}
+
+// ── USER ───────────────────────────────────────────────────
+// MANAGER  — создаёт бронирования от имени компании
+// PROVIDER — управляет площадками, получает уведомления
+// ADMIN    — полный доступ, модерация
+
+enum Role {
+  MANAGER
+  PROVIDER
+  ADMIN
+}
+
+// ── VENUE ──────────────────────────────────────────────────
+// Площадка или услуга. pricePerHour нужен для авторасчёта.
+model Venue {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  category     Category
+  pricePerHour Decimal  @db.Decimal(10, 2)
+  capacity     Int?
+  address      String?
+  photos       String[]
+  isActive     Boolean  @default(true) // модерация admin
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  providerId String
+  provider   User   @relation(fields: [providerId], references: [id])
+
+  bookings Booking[]
+}
+
+enum Category {
+  VENUE // аренда зала
+  CATERING // кейтеринг
+  DECOR // декор
+  TECH // техника
+  STAFF // персонал
+}
+
+// ── BOOKING ────────────────────────────────────────────────
+// Одна позиция в Event Basket.
+// cost = venue.pricePerHour × (endTime - startTime) в часах
+model Booking {
+  id        String        @id @default(cuid())
+  status    BookingStatus @default(PENDING)
+  startTime DateTime
+  endTime   DateTime
+  cost      Decimal       @db.Decimal(10, 2)
+  eventName String? // название мероприятия
+  notes     String?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  managerId String
+  manager   User   @relation(fields: [managerId], references: [id])
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  venueId String
+  venue   Venue  @relation(fields: [venueId], references: [id])
+
+  expenses Expense[] // создаётся при CONFIRMED
+}
+
+enum BookingStatus {
+  PENDING // ждёт ответа провайдера
+  CONFIRMED // провайдер подтвердил → триггер уведомления
+  CANCELLED
+}
+
+// ── EXPENSE ────────────────────────────────────────────────
+// Автосоздаётся при Booking → CONFIRMED.
+// Отдельная таблица для удобной аналитики и отчётов.
+// Можно добавить ручные расходы (bookingId будет null).
+model Expense {
+  id          String   @id @default(cuid())
+  amount      Decimal  @db.Decimal(10, 2)
+  category    Category
+  description String?
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  // @unique — один Booking даёт ровно один Expense
+  bookingId String?
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+}
