@@ -1,0 +1,44 @@
+{
+  "name": "bisp-final-flow",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check-types": "turbo check-types",
+    "check": "turbo run lint check-types",
+    "dev:web": "turbo -F web dev",
+    "dev:server": "turbo -F server dev",
+    "db:push": "turbo -F @bisp-final-flow/db db:push",
+    "db:studio": "turbo -F @bisp-final-flow/db db:studio",
+    "db:generate": "turbo -F @bisp-final-flow/db db:generate",
+    "db:migrate": "turbo -F @bisp-final-flow/db db:migrate",
+    "db:start": "turbo -F @bisp-final-flow/db db:start",
+    "db:watch": "turbo -F @bisp-final-flow/db db:watch",
+    "db:stop": "turbo -F @bisp-final-flow/db db:stop",
+    "db:down": "turbo -F @bisp-final-flow/db db:down",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@bisp-final-flow/env": "*",
+    "dotenv": "^17.2.2",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@bisp-final-flow/config": "*",
+    "@types/node": "^22.13.14",
+    "eslint": "^10.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "turbo": "^2.8.12",
+    "typescript": "^5"
+  },
+  "lint-staged": {
+    "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": ""
+  },
+  "packageManager": "npm@11.12.0"
+}

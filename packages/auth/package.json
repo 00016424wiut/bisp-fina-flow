@@ -1,0 +1,24 @@
+{
+  "name": "@bisp-final-flow/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@bisp-final-flow/db": "*",
+    "@bisp-final-flow/env": "*",
+    "better-auth": "1.5.2",
+    "dotenv": "^17.2.2",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@bisp-final-flow/config": "*",
+    "typescript": "^5"
+  }
+}

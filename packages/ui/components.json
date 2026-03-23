@@ -1,0 +1,24 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-lyra",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@bisp-final-flow/ui/components",
+    "utils": "@bisp-final-flow/ui/lib/utils",
+    "hooks": "@bisp-final-flow/ui/hooks",
+    "lib": "@bisp-final-flow/ui/lib",
+    "ui": "@bisp-final-flow/ui/components"
+  },
+  "menuColor": "default",
+  "menuAccent": "subtle",
+  "registries": {}
+}

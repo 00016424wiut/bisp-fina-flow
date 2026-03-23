@@ -1,0 +1,13 @@
+{
+  "extends": "@bisp-final-flow/config/tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@bisp-final-flow/db": ["../../packages/db/src/index.ts"]
+    },
+    "jsx": "react-jsx"
+  }
+}
