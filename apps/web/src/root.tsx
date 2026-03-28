@@ -10,7 +10,6 @@ import {
 
 import "./index.css";
 import type { Route } from "./+types/root";
-import Header from "./components/header";
 import { ThemeProvider } from "./components/theme-provider";
 
 export const links: Route.LinksFunction = () => [
@@ -44,12 +43,11 @@ export default function App() {
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="dark"
+      defaultTheme="light"
       disableTransitionOnChange
       storageKey="vite-ui-theme"
     >
-      <div className="grid grid-rows-[auto_1fr] h-svh">
-        <Header />
+      <div className="min-h-svh">
         <Outlet />
       </div>
       <Toaster richColors />

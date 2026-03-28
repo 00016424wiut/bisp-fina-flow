@@ -1,37 +1,241 @@
-import type { Route } from "./+types/_index";
+import { Link } from "react-router";
+import { useState } from "react";
 
-const TITLE_TEXT = `
- ██████╗ ███████╗████████╗████████╗███████╗██████╗
- ██╔══██╗██╔════╝╚══██╔══╝╚══██╔══╝██╔════╝██╔══██╗
- ██████╔╝█████╗     ██║      ██║   █████╗  ██████╔╝
- ██╔══██╗██╔══╝     ██║      ██║   ██╔══╝  ██╔══██╗
- ██████╔╝███████╗   ██║      ██║   ███████╗██║  ██║
- ╚═════╝ ╚══════╝   ╚═╝      ╚═╝   ╚══════╝╚═╝  ╚═╝
+const venues = [
+  { id: 1, name: "Rooftop Lounge", category: "Outdoor", price: 120, capacity: 50, rating: 4.8 },
+  { id: 2, name: "Private Loft", category: "Indoor", price: 95, capacity: 30, rating: 4.6 },
+  { id: 3, name: "Garden Terrace", category: "Outdoor", price: 80, capacity: 80, rating: 4.9 },
+  { id: 4, name: "Industrial Space", category: "Indoor", price: 150, capacity: 200, rating: 4.7 },
+];
 
- ████████╗    ███████╗████████╗ █████╗  ██████╗██╗  ██╗
- ╚══██╔══╝    ██╔════╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝
-    ██║       ███████╗   ██║   ███████║██║     █████╔╝
-    ██║       ╚════██║   ██║   ██╔══██║██║     ██╔═██╗
-    ██║       ███████║   ██║   ██║  ██║╚██████╗██║  ██╗
-    ╚═╝       ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝
- `;
-
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "bisp-final-flow" },
-    { name: "description", content: "bisp-final-flow is a web application" },
-  ];
-}
+const Divider = () => (
+  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 48px" }}>
+    <div style={{ width: "800px", height: "1px", background: "#d4a0a4" }} />
+    <div style={{ width: "8px", height: "8px", background: "#d4a0a4", transform: "rotate(45deg)", margin: "0 16px", flexShrink: 0 }} />
+    <div style={{ width: "800px", height: "1px", background: "#d4a0a4" }} />
+  </div>
+);
 
 export default function Home() {
+  const [when, setWhen] = useState("");
+  const [guests, setGuests] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
   return (
-    <div className="container mx-auto max-w-3xl px-4 py-2">
-      <pre className="overflow-x-auto font-mono text-sm">{TITLE_TEXT}</pre>
-      <div className="grid gap-6">
-        <section className="rounded-lg border p-4">
-          <h2 className="mb-2 font-medium">API Status</h2>
-        </section>
+    <div style={{ fontFamily: "Georgia, serif", background: "#ffffff", minHeight: "100vh" }}>
+
+      {/* NAV */}
+      <nav style={{
+        position: "sticky", top: 0, zIndex: 100,
+        background: "rgba(255,255,255,0.95)", backdropFilter: "blur(8px)",
+        borderBottom: "1px solid #e8d4d6",
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "0 48px", height: "56px",
+      }}>
+        <div style={{ display: "flex", gap: "32px", alignItems: "center" }}>
+          <span style={{ fontSize: "24px", color: "#2c2c2c", fontStyle: "italic" }}>FLOW</span>
+          <div style={{ display: "flex", gap: "24px" }}>
+            {["Restaurants", "Outdoor", "Master Classes", "Activities", "Gifts"].map(item => (
+              <Link key={item} to="/" style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}>
+                {item}
+              </Link>
+            ))}
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+          <Link to="/login" style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}>Login</Link>
+          <Link to="/login" style={{
+            fontSize: "13px", color: "#2c2c2c", textDecoration: "none",
+            border: "1px solid #2c2c2c", padding: "6px 16px", borderRadius: "20px",
+          }}>Sign Up</Link>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <section style={{ textAlign: "center", padding: "80px 48px 60px" }}>
+        <h1 style={{
+          fontSize: "clamp(36px, 6vw, 68px)", fontWeight: 400,
+          color: "#2c2c2c", lineHeight: 1.1, margin: "0 0 16px",
+          letterSpacing: "-1px",
+        }}>
+          STOP SEARCHING,<br />START PARTYING
+        </h1>
+        <p style={{ fontSize: "14px", color: "#7a7a7a", margin: "0 0 40px" }}>
+          From underground neon lofts to rooftop terraces. Find the ultimate spot for your next legendary night.
+        </p>
+        {/* Search bar */}
+        <div style={{
+          display: "inline-flex", alignItems: "center", gap: "0",
+          background: "white", border: "1px solid #d4a0a4",
+          borderRadius: "40px", padding: "14px 8px 14px 28px",
+          boxShadow: "0 2px 20px rgba(212,160,164,0.1)",
+        }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "0 20px 0 0" }}>
+            <span style={{ fontSize: "15px", color: "#000000", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "4px" }}>When?</span>
+            <input type="date" value={when} onChange={e => setWhen(e.target.value)}
+              style={{ border: "none", outline: "none", fontSize: "13px", fontFamily: "Georgia, serif", color: "#2c2c2c", background: "transparent", width: "130px" }} />
+          </div>
+
+          <div style={{ width: "1px", height: "28px", background: "#e8d4d6", flexShrink: 0 }} />
+
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "0 20px" }}>
+            <span style={{ fontSize: "15px", color: "#000000", textTransform: "uppercase", letterSpacing: "1.5px", marginBottom: "4px" }}>How many guests?</span>
+            <input type="number" placeholder="20" value={guests} onChange={e => setGuests(e.target.value)}
+              style={{ border: "none", outline: "none", fontSize: "13px", fontFamily: "Georgia, serif", color: "#2c2c2c", background: "transparent", width: "80px" }} />
+          </div>
+
+          <button style={{
+            background: "#2c2c2c", color: "white", border: "none",
+            borderRadius: "30px", padding: "12px 28px", fontSize: "13px",
+            fontFamily: "Georgia, serif", cursor: "pointer", marginLeft: "8px",
+            whiteSpace: "nowrap",
+          }}>Let's Party</button>
+        </div>
+
+      </section>
+
+      {/* WHY FLOW */}
+      <section style={{ padding: "40px 48px 60px", textAlign: "center" }}>
+        <h2 style={{ fontSize: "25px", color: "#000000", letterSpacing: "3px", textTransform: "uppercase", margin: "0 0 40px" }}>
+          WHY FLOW?
+        </h2>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "32px", maxWidth: "800px", margin: "0 auto" }}>
+          {[
+            { icon: "✦", title: "Vetted for Vibes", desc: "We personally check every space. Only epic spots made the cut." },
+            { icon: "⚡️", title: "Instant Booking", desc: "No slow email back-and-forth. Secure your spot in one click." },
+            { icon: "◈", title: "No Hidden Buzzkills", desc: "Transparent pricing. What you see is what you pay." },
+          ].map(item => (
+            <div key={item.title}>
+              <div style={{ fontSize: "25px", marginBottom: "12px", color: "#c4848a" }}>{item.icon}</div>
+              <h3 style={{ fontSize: "15px", fontWeight: 400, margin: "0 0 8px", color: "#2c2c2c" }}>{item.title}</h3>
+              <p style={{ fontSize: "13px", color: "#7a7a7a", lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* DIVIDER TOP */}
+      <Divider />
+
+      {/* CTA */}
+      <div style={{ padding: "32px 48px", textAlign: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "300px", marginBottom: "32px" }}>
+          <div style={{ width: "280px", textAlign: "right" }}>
+            <h2 style={{
+              fontSize: "clamp(18px, 2.5vw, 28px)", fontWeight: 400,
+              color: "#2c2c2c", margin: 0, fontStyle: "italic",
+              fontFamily: "Georgia, serif",
+            }}>
+              Got an Epic Space?
+            </h2>
+          </div>
+          <div style={{ width: "280px", textAlign: "left" }}>
+            <h2 style={{
+              fontSize: "clamp(18px, 2.5vw, 28px)", fontWeight: 400,
+              color: "#2c2c2c", margin: 0, fontStyle: "italic",
+              fontFamily: "Georgia, serif",
+            }}>
+              Host with Us!
+            </h2>
+          </div>
+        </div>
+        <button style={{
+          background: "transparent", color: "#2c2c2c",
+          border: "1px solid #2c2c2c", borderRadius: "30px",
+          padding: "12px 48px", fontSize: "13px",
+          fontFamily: "Georgia, serif", cursor: "pointer",
+        }}>
+          Start Hosting
+        </button>
       </div>
+
+
+      {/* DIVIDER BOTTOM */}
+      <div style={{ marginBottom: "48px" }}>
+        <Divider />
+      </div>
+
+      {/* TRENDING COMBOS */}
+      <section style={{ padding: "0 48px 60px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "24px" }}>
+          <h2 style={{ fontSize: "20px", fontWeight: 400, color: "#2c2c2c", margin: 0 }}>Trending Combos</h2>
+          <Link to="/venues" style={{ fontSize: "13px", color: "#c4848a", textDecoration: "none" }}>View all →</Link>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
+          {venues.map(venue => (
+            <div key={venue.id} style={{
+              background: "white", border: "1px solid #e8d4d6",
+              borderRadius: "8px", overflow: "hidden", cursor: "pointer",
+            }}>
+              <div style={{
+                height: "140px",
+                background: "linear-gradient(135deg, #f0dde0 0%, #e8c4c8 100%)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <span style={{ fontSize: "28px", opacity: 0.3 }}>◈</span>
+              </div>
+              <div style={{ padding: "12px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+                  <span style={{ fontSize: "14px", color: "#2c2c2c" }}>{venue.name}</span>
+                  <span style={{ fontSize: "11px", color: "#c4848a" }}>★ {venue.rating}</span>
+                </div>
+                <p style={{ fontSize: "12px", color: "#a0a0a0", margin: "0 0 8px" }}>
+                  {venue.category} · {venue.capacity} guests
+                </p>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "13px", color: "#2c2c2c" }}>${venue.price}<span style={{ color: "#a0a0a0", fontSize: "11px" }}>/hr</span></span>
+                  <span style={{ fontSize: "11px", background: "#f0dde0", color: "#c4848a", padding: "3px 10px", borderRadius: "12px" }}>Book</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CONTACT WITH US */}
+      <section style={{ padding: "0 48px 60px" }}>
+        <h2 style={{ fontSize: "20px", fontWeight: 400, color: "#2c2c2c", margin: "0 0 24px" }}>
+          Contact with us
+        </h2>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", alignItems: "start" }}>
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", height: "160px" }}>
+            <input placeholder="Your name" value={name} onChange={e => setName(e.target.value)}
+              style={{ border: "none", borderBottom: "1px solid #d4a0a4", padding: "10px 0", fontSize: "13px", fontFamily: "Georgia, serif", background: "transparent", outline: "none", color: "#2c2c2c" }} />
+            <input placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)}
+              style={{ border: "none", borderBottom: "1px solid #d4a0a4", padding: "10px 0", fontSize: "13px", fontFamily: "Georgia, serif", background: "transparent", outline: "none", color: "#2c2c2c" }} />
+            <input placeholder="Phone number"
+              style={{ border: "none", borderBottom: "1px solid #d4a0a4", padding: "10px 0", fontSize: "13px", fontFamily: "Georgia, serif", background: "transparent", outline: "none", color: "#2c2c2c" }} />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <textarea placeholder="Your message" value={message} onChange={e => setMessage(e.target.value)}
+              style={{
+                border: "1px solid #d4a0a4", borderRadius: "4px",
+                padding: "12px", fontSize: "13px",
+                fontFamily: "Georgia, serif", background: "transparent",
+                outline: "none", color: "#2c2c2c",
+                resize: "none", height: "160px",
+              }} />
+            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+              <button style={{
+                background: "#d9d9d9", color: "#2c2c2c",
+                border: "1px solid #b0b0b0", borderRadius: "4px",
+                padding: "10px 100px", fontSize: "13px",
+                fontFamily: "Georgia, serif", cursor: "pointer",
+              }}>
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer style={{ padding: "20px 48px", borderTop: "1px solid #e8d4d6", textAlign: "right" }}>
+        <span style={{ fontSize: "11px", color: "#a0a0a0" }}>© 2026 Flow</span>
+      </footer>
+
     </div>
   );
 }
