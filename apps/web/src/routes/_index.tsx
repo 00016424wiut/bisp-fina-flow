@@ -38,7 +38,11 @@ export default function Home() {
           <span style={{ fontSize: "24px", color: "#2c2c2c", fontStyle: "italic" }}>FLOW</span>
           <div style={{ display: "flex", gap: "24px" }}>
             {["Restaurants", "Outdoor", "Master Classes", "Activities", "Gifts"].map(item => (
-              <Link key={item} to="/" style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}>
+              <Link 
+                key={item} 
+                to={`/${item.toLowerCase().replace(" ", "-")}`} 
+                style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}
+              >
                 {item}
               </Link>
             ))}
