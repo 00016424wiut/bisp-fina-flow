@@ -119,9 +119,16 @@ model Venue {
   capacity     Int?
   address      String?
   photos       String[]
-  isActive     Boolean  @default(true) // модерация admin
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  tags         String[]
+  hours        String?
+  duration     String?
+  averageCheck String?
+  rating       Float?
+  menus        Json?
+
+  isActive  Boolean  @default(true) // модерация admin
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   providerId String
   provider   User   @relation(fields: [providerId], references: [id])
@@ -130,26 +137,27 @@ model Venue {
 }
 
 enum Category {
-  VENUE // аренда зала
-  CATERING // кейтеринг
-  DECOR // декор
-  TECH // техника
-  STAFF // персонал
+  RESTAURANTS
+  OUTDOOR
+  MASTER_CLASSES
+  ACTIVITIES
+  GIFTS
 }
 
 // ── BOOKING ────────────────────────────────────────────────
 // Одна позиция в Event Basket.
 // cost = venue.pricePerHour × (endTime - startTime) в часах
 model Booking {
-  id        String        @id @default(cuid())
-  status    BookingStatus @default(PENDING)
-  startTime DateTime
-  endTime   DateTime
-  cost      Decimal       @db.Decimal(10, 2)
-  eventName String? // название мероприятия
-  notes     String?
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id         String        @id @default(cuid())
+  status     BookingStatus @default(PENDING)
+  startTime  DateTime
+  endTime    DateTime
+  guestCount Int?
+  cost       Decimal       @db.Decimal(10, 2)
+  eventName  String? // название мероприятия
+  notes      String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
 
   managerId String
   manager   User   @relation(fields: [managerId], references: [id])

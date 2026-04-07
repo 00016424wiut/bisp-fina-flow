@@ -1,5 +1,6 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 const venues = [
   { id: 1, name: "Rooftop Lounge", category: "Outdoor", price: 120, capacity: 50, rating: 4.8 },
@@ -22,6 +23,8 @@ export default function Home() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const { data: session } = authClient.useSession();
+  const navigate = useNavigate();
 
   return (
     <div style={{ fontFamily: "Georgia, serif", background: "#ffffff", minHeight: "100vh" }}>
@@ -38,9 +41,9 @@ export default function Home() {
           <span style={{ fontSize: "24px", color: "#2c2c2c", fontStyle: "italic" }}>FLOW</span>
           <div style={{ display: "flex", gap: "24px" }}>
             {["Restaurants", "Outdoor", "Master Classes", "Activities", "Gifts"].map(item => (
-              <Link 
-                key={item} 
-                to={`/${item.toLowerCase().replace(" ", "-")}`} 
+              <Link
+                key={item}
+                to={`/${item.toLowerCase().replace(" ", "-")}`}
                 style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}
               >
                 {item}
@@ -49,12 +52,40 @@ export default function Home() {
           </div>
         </div>
         <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <Link to="/login" style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}>Login</Link>
-          <Link to="/login" style={{
-            fontSize: "13px", color: "#2c2c2c", textDecoration: "none",
-            border: "1px solid #2c2c2c", padding: "6px 16px", borderRadius: "20px",
-          }}>Sign Up</Link>
+          {session ? (
+            // После логина — иконки корзины и профиля
+            <>
+              <button
+                onClick={() => navigate ( "/cart" )}
+                style={{ background: "none", border: "none", cursor: "pointer", fontSize: "20px", color: "#2c2c2c" }}
+              >
+                🛒
+              </button>
+              <button
+                onClick={() => authClient.signOut().then(() => window.location.href = "/")}
+                style={{
+                  background: "none", border: "1px solid #e8d4d6",
+                  borderRadius: "50%", width: "32px", height: "32px",
+                  cursor: "pointer", fontSize: "14px", color: "#2c2c2c",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+                title="Sign out"
+              >
+                👤
+              </button>
+            </>
+          ) : (
+            // Не залогинен — Login и Sign Up
+            <>
+              <Link to="/login" style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}>Login</Link>
+              <Link to="/onboarding" style={{
+                fontSize: "13px", color: "#2c2c2c", textDecoration: "none",
+                border: "1px solid #2c2c2c", padding: "6px 16px", borderRadius: "20px",
+              }}>Sign Up</Link>
+            </>
+          )}
         </div>
+
       </nav>
 
       {/* HERO */}

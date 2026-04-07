@@ -3,11 +3,12 @@ import { requireAuth } from "../../middleware/auth.middleware";
 import { requireRole } from "../../middleware/role.middleware";
 import { getVenues, createVenue } from "./venues.service";
 import { Role } from "@bisp-final-flow/db";
+import { prisma } from "@bisp-final-flow/db";
 
 const router = Router();
 
 // GET /api/venues — все могут смотреть каталог
-router.get("/", requireAuth, async (req, res) => {
+router.get("/", async (req, res) => {
   const { category, capacity } = req.query;
   const venues = await getVenues({
     category: category as string,
@@ -26,5 +27,18 @@ router.post(
     res.status(201).json(venue);
   }
 );
+
+// GET /api/venues/:id — получить одну площадку
+router.get("/:id", async (req, res) => {
+  const venue = await prisma.venue.findUnique({
+    where: { id: req.params.id },
+  });
+  if (!venue) {
+    res.status(404).json({ error: "Venue not found" });
+    return;
+  }
+  res.json(venue);
+});
+
 
 export default router;

@@ -7,7 +7,6 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-
   trustedOrigins: [env.CORS_ORIGIN],
   emailAndPassword: {
     enabled: true,
@@ -19,6 +18,14 @@ export const auth = betterAuth({
       sameSite: "none",
       secure: true,
       httpOnly: true,
+    },
+  },
+  user: {
+    additionalFields: {
+      role: { type: "string" as const, required: false },
+      companyId: { type: "string" as const, required: false },
+      telegramChatId: { type: "string" as const, required: false },
+      telegramUsername: { type: "string" as const, required: false },
     },
   },
   plugins: [],

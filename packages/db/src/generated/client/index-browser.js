@@ -186,6 +186,12 @@ exports.Prisma.VenueScalarFieldEnum = {
   capacity: 'capacity',
   address: 'address',
   photos: 'photos',
+  tags: 'tags',
+  hours: 'hours',
+  duration: 'duration',
+  averageCheck: 'averageCheck',
+  rating: 'rating',
+  menus: 'menus',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -197,6 +203,7 @@ exports.Prisma.BookingScalarFieldEnum = {
   status: 'status',
   startTime: 'startTime',
   endTime: 'endTime',
+  guestCount: 'guestCount',
   cost: 'cost',
   eventName: 'eventName',
   notes: 'notes',
@@ -223,6 +230,11 @@ exports.Prisma.SortOrder = {
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
@@ -232,6 +244,12 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
 exports.Role = exports.$Enums.Role = {
   MANAGER: 'MANAGER',
   PROVIDER: 'PROVIDER',
@@ -239,11 +257,11 @@ exports.Role = exports.$Enums.Role = {
 };
 
 exports.Category = exports.$Enums.Category = {
-  VENUE: 'VENUE',
-  CATERING: 'CATERING',
-  DECOR: 'DECOR',
-  TECH: 'TECH',
-  STAFF: 'STAFF'
+  RESTAURANTS: 'RESTAURANTS',
+  OUTDOOR: 'OUTDOOR',
+  MASTER_CLASSES: 'MASTER_CLASSES',
+  ACTIVITIES: 'ACTIVITIES',
+  GIFTS: 'GIFTS'
 };
 
 exports.BookingStatus = exports.$Enums.BookingStatus = {

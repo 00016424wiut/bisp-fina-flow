@@ -28,6 +28,32 @@ export function calculateCost(
   return Math.round(pricePerHour * hours * 100) / 100
 }
 
+// Получить занятые временные слоты для конкретной площадки и даты
+export async function getBookedSlots(
+  venueId: string,
+  date: string
+): Promise<{ startTime: string; endTime: string }[]> {
+  const startOfDay = new Date(date);
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date(date);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  const bookings = await prisma.booking.findMany({
+    where: {
+      venueId,
+      status: { not: "CANCELLED" },
+      startTime: { gte: startOfDay, lte: endOfDay },
+    },
+    select: { startTime: true, endTime: true },
+  });
+
+  return bookings.map(b => ({
+    startTime: `${String(b.startTime.getHours()).padStart(2, "0")}:${String(b.startTime.getMinutes()).padStart(2, "0")}`,
+    endTime: `${String(b.endTime.getHours()).padStart(2, "0")}:${String(b.endTime.getMinutes()).padStart(2, "0")}`,
+  }));
+}
+
+
 export async function confirmBooking(
   bookingId: string,
   companyId: string
@@ -78,6 +104,7 @@ export async function createBooking(
     endTime: string;
     eventName?: string;
     notes?: string;
+    guestCount?: number;
   }
 ): Promise<Booking> {
   const venue = await prisma.venue.findUnique({
@@ -107,7 +134,16 @@ export async function createBooking(
       cost,
       eventName: data.eventName,
       notes: data.notes,
+      guestCount: data.guestCount,
       status: BookingStatus.PENDING,
     },
   })
+}
+
+export async function getMyBookings(managerId: string) {
+  return prisma.booking.findMany({
+    where: { managerId },
+    include: { venue: true },
+    orderBy: { createdAt: "desc" },
+  });
 }

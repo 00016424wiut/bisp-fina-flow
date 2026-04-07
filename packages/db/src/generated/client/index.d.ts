@@ -68,11 +68,11 @@ export type Role = (typeof Role)[keyof typeof Role]
 
 
 export const Category: {
-  VENUE: 'VENUE',
-  CATERING: 'CATERING',
-  DECOR: 'DECOR',
-  TECH: 'TECH',
-  STAFF: 'STAFF'
+  RESTAURANTS: 'RESTAURANTS',
+  OUTDOOR: 'OUTDOOR',
+  MASTER_CLASSES: 'MASTER_CLASSES',
+  ACTIVITIES: 'ACTIVITIES',
+  GIFTS: 'GIFTS'
 };
 
 export type Category = (typeof Category)[keyof typeof Category]
@@ -7406,11 +7406,13 @@ export namespace Prisma {
   export type VenueAvgAggregateOutputType = {
     pricePerHour: Decimal | null
     capacity: number | null
+    rating: number | null
   }
 
   export type VenueSumAggregateOutputType = {
     pricePerHour: Decimal | null
     capacity: number | null
+    rating: number | null
   }
 
   export type VenueMinAggregateOutputType = {
@@ -7421,6 +7423,10 @@ export namespace Prisma {
     pricePerHour: Decimal | null
     capacity: number | null
     address: string | null
+    hours: string | null
+    duration: string | null
+    averageCheck: string | null
+    rating: number | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -7435,6 +7441,10 @@ export namespace Prisma {
     pricePerHour: Decimal | null
     capacity: number | null
     address: string | null
+    hours: string | null
+    duration: string | null
+    averageCheck: string | null
+    rating: number | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -7450,6 +7460,12 @@ export namespace Prisma {
     capacity: number
     address: number
     photos: number
+    tags: number
+    hours: number
+    duration: number
+    averageCheck: number
+    rating: number
+    menus: number
     isActive: number
     createdAt: number
     updatedAt: number
@@ -7461,11 +7477,13 @@ export namespace Prisma {
   export type VenueAvgAggregateInputType = {
     pricePerHour?: true
     capacity?: true
+    rating?: true
   }
 
   export type VenueSumAggregateInputType = {
     pricePerHour?: true
     capacity?: true
+    rating?: true
   }
 
   export type VenueMinAggregateInputType = {
@@ -7476,6 +7494,10 @@ export namespace Prisma {
     pricePerHour?: true
     capacity?: true
     address?: true
+    hours?: true
+    duration?: true
+    averageCheck?: true
+    rating?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -7490,6 +7512,10 @@ export namespace Prisma {
     pricePerHour?: true
     capacity?: true
     address?: true
+    hours?: true
+    duration?: true
+    averageCheck?: true
+    rating?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -7505,6 +7531,12 @@ export namespace Prisma {
     capacity?: true
     address?: true
     photos?: true
+    tags?: true
+    hours?: true
+    duration?: true
+    averageCheck?: true
+    rating?: true
+    menus?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -7607,6 +7639,12 @@ export namespace Prisma {
     capacity: number | null
     address: string | null
     photos: string[]
+    tags: string[]
+    hours: string | null
+    duration: string | null
+    averageCheck: string | null
+    rating: number | null
+    menus: JsonValue | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -7641,6 +7679,12 @@ export namespace Prisma {
     capacity?: boolean
     address?: boolean
     photos?: boolean
+    tags?: boolean
+    hours?: boolean
+    duration?: boolean
+    averageCheck?: boolean
+    rating?: boolean
+    menus?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -7659,6 +7703,12 @@ export namespace Prisma {
     capacity?: boolean
     address?: boolean
     photos?: boolean
+    tags?: boolean
+    hours?: boolean
+    duration?: boolean
+    averageCheck?: boolean
+    rating?: boolean
+    menus?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -7675,6 +7725,12 @@ export namespace Prisma {
     capacity?: boolean
     address?: boolean
     photos?: boolean
+    tags?: boolean
+    hours?: boolean
+    duration?: boolean
+    averageCheck?: boolean
+    rating?: boolean
+    menus?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -7691,13 +7747,19 @@ export namespace Prisma {
     capacity?: boolean
     address?: boolean
     photos?: boolean
+    tags?: boolean
+    hours?: boolean
+    duration?: boolean
+    averageCheck?: boolean
+    rating?: boolean
+    menus?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     providerId?: boolean
   }
 
-  export type VenueOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "category" | "pricePerHour" | "capacity" | "address" | "photos" | "isActive" | "createdAt" | "updatedAt" | "providerId", ExtArgs["result"]["venue"]>
+  export type VenueOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "category" | "pricePerHour" | "capacity" | "address" | "photos" | "tags" | "hours" | "duration" | "averageCheck" | "rating" | "menus" | "isActive" | "createdAt" | "updatedAt" | "providerId", ExtArgs["result"]["venue"]>
   export type VenueInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     provider?: boolean | UserDefaultArgs<ExtArgs>
     bookings?: boolean | Venue$bookingsArgs<ExtArgs>
@@ -7725,6 +7787,12 @@ export namespace Prisma {
       capacity: number | null
       address: string | null
       photos: string[]
+      tags: string[]
+      hours: string | null
+      duration: string | null
+      averageCheck: string | null
+      rating: number | null
+      menus: Prisma.JsonValue | null
       isActive: boolean
       createdAt: Date
       updatedAt: Date
@@ -8162,6 +8230,12 @@ export namespace Prisma {
     readonly capacity: FieldRef<"Venue", 'Int'>
     readonly address: FieldRef<"Venue", 'String'>
     readonly photos: FieldRef<"Venue", 'String[]'>
+    readonly tags: FieldRef<"Venue", 'String[]'>
+    readonly hours: FieldRef<"Venue", 'String'>
+    readonly duration: FieldRef<"Venue", 'String'>
+    readonly averageCheck: FieldRef<"Venue", 'String'>
+    readonly rating: FieldRef<"Venue", 'Float'>
+    readonly menus: FieldRef<"Venue", 'Json'>
     readonly isActive: FieldRef<"Venue", 'Boolean'>
     readonly createdAt: FieldRef<"Venue", 'DateTime'>
     readonly updatedAt: FieldRef<"Venue", 'DateTime'>
@@ -8622,10 +8696,12 @@ export namespace Prisma {
   }
 
   export type BookingAvgAggregateOutputType = {
+    guestCount: number | null
     cost: Decimal | null
   }
 
   export type BookingSumAggregateOutputType = {
+    guestCount: number | null
     cost: Decimal | null
   }
 
@@ -8634,6 +8710,7 @@ export namespace Prisma {
     status: $Enums.BookingStatus | null
     startTime: Date | null
     endTime: Date | null
+    guestCount: number | null
     cost: Decimal | null
     eventName: string | null
     notes: string | null
@@ -8649,6 +8726,7 @@ export namespace Prisma {
     status: $Enums.BookingStatus | null
     startTime: Date | null
     endTime: Date | null
+    guestCount: number | null
     cost: Decimal | null
     eventName: string | null
     notes: string | null
@@ -8664,6 +8742,7 @@ export namespace Prisma {
     status: number
     startTime: number
     endTime: number
+    guestCount: number
     cost: number
     eventName: number
     notes: number
@@ -8677,10 +8756,12 @@ export namespace Prisma {
 
 
   export type BookingAvgAggregateInputType = {
+    guestCount?: true
     cost?: true
   }
 
   export type BookingSumAggregateInputType = {
+    guestCount?: true
     cost?: true
   }
 
@@ -8689,6 +8770,7 @@ export namespace Prisma {
     status?: true
     startTime?: true
     endTime?: true
+    guestCount?: true
     cost?: true
     eventName?: true
     notes?: true
@@ -8704,6 +8786,7 @@ export namespace Prisma {
     status?: true
     startTime?: true
     endTime?: true
+    guestCount?: true
     cost?: true
     eventName?: true
     notes?: true
@@ -8719,6 +8802,7 @@ export namespace Prisma {
     status?: true
     startTime?: true
     endTime?: true
+    guestCount?: true
     cost?: true
     eventName?: true
     notes?: true
@@ -8821,6 +8905,7 @@ export namespace Prisma {
     status: $Enums.BookingStatus
     startTime: Date
     endTime: Date
+    guestCount: number | null
     cost: Decimal
     eventName: string | null
     notes: string | null
@@ -8855,6 +8940,7 @@ export namespace Prisma {
     status?: boolean
     startTime?: boolean
     endTime?: boolean
+    guestCount?: boolean
     cost?: boolean
     eventName?: boolean
     notes?: boolean
@@ -8875,6 +8961,7 @@ export namespace Prisma {
     status?: boolean
     startTime?: boolean
     endTime?: boolean
+    guestCount?: boolean
     cost?: boolean
     eventName?: boolean
     notes?: boolean
@@ -8893,6 +8980,7 @@ export namespace Prisma {
     status?: boolean
     startTime?: boolean
     endTime?: boolean
+    guestCount?: boolean
     cost?: boolean
     eventName?: boolean
     notes?: boolean
@@ -8911,6 +8999,7 @@ export namespace Prisma {
     status?: boolean
     startTime?: boolean
     endTime?: boolean
+    guestCount?: boolean
     cost?: boolean
     eventName?: boolean
     notes?: boolean
@@ -8921,7 +9010,7 @@ export namespace Prisma {
     venueId?: boolean
   }
 
-  export type BookingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "status" | "startTime" | "endTime" | "cost" | "eventName" | "notes" | "createdAt" | "updatedAt" | "managerId" | "companyId" | "venueId", ExtArgs["result"]["booking"]>
+  export type BookingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "status" | "startTime" | "endTime" | "guestCount" | "cost" | "eventName" | "notes" | "createdAt" | "updatedAt" | "managerId" | "companyId" | "venueId", ExtArgs["result"]["booking"]>
   export type BookingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     manager?: boolean | UserDefaultArgs<ExtArgs>
     company?: boolean | CompanyDefaultArgs<ExtArgs>
@@ -8953,6 +9042,7 @@ export namespace Prisma {
       status: $Enums.BookingStatus
       startTime: Date
       endTime: Date
+      guestCount: number | null
       cost: Prisma.Decimal
       eventName: string | null
       notes: string | null
@@ -9392,6 +9482,7 @@ export namespace Prisma {
     readonly status: FieldRef<"Booking", 'BookingStatus'>
     readonly startTime: FieldRef<"Booking", 'DateTime'>
     readonly endTime: FieldRef<"Booking", 'DateTime'>
+    readonly guestCount: FieldRef<"Booking", 'Int'>
     readonly cost: FieldRef<"Booking", 'Decimal'>
     readonly eventName: FieldRef<"Booking", 'String'>
     readonly notes: FieldRef<"Booking", 'String'>
@@ -11101,6 +11192,12 @@ export namespace Prisma {
     capacity: 'capacity',
     address: 'address',
     photos: 'photos',
+    tags: 'tags',
+    hours: 'hours',
+    duration: 'duration',
+    averageCheck: 'averageCheck',
+    rating: 'rating',
+    menus: 'menus',
     isActive: 'isActive',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -11115,6 +11212,7 @@ export namespace Prisma {
     status: 'status',
     startTime: 'startTime',
     endTime: 'endTime',
+    guestCount: 'guestCount',
     cost: 'cost',
     eventName: 'eventName',
     notes: 'notes',
@@ -11150,6 +11248,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const QueryMode: {
     default: 'default',
     insensitive: 'insensitive'
@@ -11164,6 +11270,15 @@ export namespace Prisma {
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 
 
   /**
@@ -11263,20 +11378,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'BookingStatus'
-   */
-  export type EnumBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookingStatus'>
-    
-
-
-  /**
-   * Reference to a field of type 'BookingStatus[]'
-   */
-  export type ListEnumBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookingStatus[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Float'
    */
   export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -11287,6 +11388,34 @@ export namespace Prisma {
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'BookingStatus'
+   */
+  export type EnumBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookingStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'BookingStatus[]'
+   */
+  export type ListEnumBookingStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BookingStatus[]'>
     
   /**
    * Deep Input Types
@@ -11680,6 +11809,12 @@ export namespace Prisma {
     capacity?: IntNullableFilter<"Venue"> | number | null
     address?: StringNullableFilter<"Venue"> | string | null
     photos?: StringNullableListFilter<"Venue">
+    tags?: StringNullableListFilter<"Venue">
+    hours?: StringNullableFilter<"Venue"> | string | null
+    duration?: StringNullableFilter<"Venue"> | string | null
+    averageCheck?: StringNullableFilter<"Venue"> | string | null
+    rating?: FloatNullableFilter<"Venue"> | number | null
+    menus?: JsonNullableFilter<"Venue">
     isActive?: BoolFilter<"Venue"> | boolean
     createdAt?: DateTimeFilter<"Venue"> | Date | string
     updatedAt?: DateTimeFilter<"Venue"> | Date | string
@@ -11697,6 +11832,12 @@ export namespace Prisma {
     capacity?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
     photos?: SortOrder
+    tags?: SortOrder
+    hours?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    averageCheck?: SortOrderInput | SortOrder
+    rating?: SortOrderInput | SortOrder
+    menus?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11717,6 +11858,12 @@ export namespace Prisma {
     capacity?: IntNullableFilter<"Venue"> | number | null
     address?: StringNullableFilter<"Venue"> | string | null
     photos?: StringNullableListFilter<"Venue">
+    tags?: StringNullableListFilter<"Venue">
+    hours?: StringNullableFilter<"Venue"> | string | null
+    duration?: StringNullableFilter<"Venue"> | string | null
+    averageCheck?: StringNullableFilter<"Venue"> | string | null
+    rating?: FloatNullableFilter<"Venue"> | number | null
+    menus?: JsonNullableFilter<"Venue">
     isActive?: BoolFilter<"Venue"> | boolean
     createdAt?: DateTimeFilter<"Venue"> | Date | string
     updatedAt?: DateTimeFilter<"Venue"> | Date | string
@@ -11734,6 +11881,12 @@ export namespace Prisma {
     capacity?: SortOrderInput | SortOrder
     address?: SortOrderInput | SortOrder
     photos?: SortOrder
+    tags?: SortOrder
+    hours?: SortOrderInput | SortOrder
+    duration?: SortOrderInput | SortOrder
+    averageCheck?: SortOrderInput | SortOrder
+    rating?: SortOrderInput | SortOrder
+    menus?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11757,6 +11910,12 @@ export namespace Prisma {
     capacity?: IntNullableWithAggregatesFilter<"Venue"> | number | null
     address?: StringNullableWithAggregatesFilter<"Venue"> | string | null
     photos?: StringNullableListFilter<"Venue">
+    tags?: StringNullableListFilter<"Venue">
+    hours?: StringNullableWithAggregatesFilter<"Venue"> | string | null
+    duration?: StringNullableWithAggregatesFilter<"Venue"> | string | null
+    averageCheck?: StringNullableWithAggregatesFilter<"Venue"> | string | null
+    rating?: FloatNullableWithAggregatesFilter<"Venue"> | number | null
+    menus?: JsonNullableWithAggregatesFilter<"Venue">
     isActive?: BoolWithAggregatesFilter<"Venue"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Venue"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Venue"> | Date | string
@@ -11771,6 +11930,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFilter<"Booking"> | $Enums.BookingStatus
     startTime?: DateTimeFilter<"Booking"> | Date | string
     endTime?: DateTimeFilter<"Booking"> | Date | string
+    guestCount?: IntNullableFilter<"Booking"> | number | null
     cost?: DecimalFilter<"Booking"> | Decimal | DecimalJsLike | number | string
     eventName?: StringNullableFilter<"Booking"> | string | null
     notes?: StringNullableFilter<"Booking"> | string | null
@@ -11790,6 +11950,7 @@ export namespace Prisma {
     status?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    guestCount?: SortOrderInput | SortOrder
     cost?: SortOrder
     eventName?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
@@ -11812,6 +11973,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFilter<"Booking"> | $Enums.BookingStatus
     startTime?: DateTimeFilter<"Booking"> | Date | string
     endTime?: DateTimeFilter<"Booking"> | Date | string
+    guestCount?: IntNullableFilter<"Booking"> | number | null
     cost?: DecimalFilter<"Booking"> | Decimal | DecimalJsLike | number | string
     eventName?: StringNullableFilter<"Booking"> | string | null
     notes?: StringNullableFilter<"Booking"> | string | null
@@ -11831,6 +11993,7 @@ export namespace Prisma {
     status?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    guestCount?: SortOrderInput | SortOrder
     cost?: SortOrder
     eventName?: SortOrderInput | SortOrder
     notes?: SortOrderInput | SortOrder
@@ -11854,6 +12017,7 @@ export namespace Prisma {
     status?: EnumBookingStatusWithAggregatesFilter<"Booking"> | $Enums.BookingStatus
     startTime?: DateTimeWithAggregatesFilter<"Booking"> | Date | string
     endTime?: DateTimeWithAggregatesFilter<"Booking"> | Date | string
+    guestCount?: IntNullableWithAggregatesFilter<"Booking"> | number | null
     cost?: DecimalWithAggregatesFilter<"Booking"> | Decimal | DecimalJsLike | number | string
     eventName?: StringNullableWithAggregatesFilter<"Booking"> | string | null
     notes?: StringNullableWithAggregatesFilter<"Booking"> | string | null
@@ -12372,6 +12536,12 @@ export namespace Prisma {
     capacity?: number | null
     address?: string | null
     photos?: VenueCreatephotosInput | string[]
+    tags?: VenueCreatetagsInput | string[]
+    hours?: string | null
+    duration?: string | null
+    averageCheck?: string | null
+    rating?: number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12388,6 +12558,12 @@ export namespace Prisma {
     capacity?: number | null
     address?: string | null
     photos?: VenueCreatephotosInput | string[]
+    tags?: VenueCreatetagsInput | string[]
+    hours?: string | null
+    duration?: string | null
+    averageCheck?: string | null
+    rating?: number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12404,6 +12580,12 @@ export namespace Prisma {
     capacity?: NullableIntFieldUpdateOperationsInput | number | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     photos?: VenueUpdatephotosInput | string[]
+    tags?: VenueUpdatetagsInput | string[]
+    hours?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12420,6 +12602,12 @@ export namespace Prisma {
     capacity?: NullableIntFieldUpdateOperationsInput | number | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     photos?: VenueUpdatephotosInput | string[]
+    tags?: VenueUpdatetagsInput | string[]
+    hours?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12436,6 +12624,12 @@ export namespace Prisma {
     capacity?: number | null
     address?: string | null
     photos?: VenueCreatephotosInput | string[]
+    tags?: VenueCreatetagsInput | string[]
+    hours?: string | null
+    duration?: string | null
+    averageCheck?: string | null
+    rating?: number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12451,6 +12645,12 @@ export namespace Prisma {
     capacity?: NullableIntFieldUpdateOperationsInput | number | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     photos?: VenueUpdatephotosInput | string[]
+    tags?: VenueUpdatetagsInput | string[]
+    hours?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12465,6 +12665,12 @@ export namespace Prisma {
     capacity?: NullableIntFieldUpdateOperationsInput | number | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     photos?: VenueUpdatephotosInput | string[]
+    tags?: VenueUpdatetagsInput | string[]
+    hours?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12476,6 +12682,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -12492,6 +12699,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -12508,6 +12716,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12524,6 +12733,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12540,6 +12750,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -12555,6 +12766,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12567,6 +12779,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13081,6 +13294,40 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
+  export type FloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
   export type VenueCountOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
@@ -13090,6 +13337,12 @@ export namespace Prisma {
     capacity?: SortOrder
     address?: SortOrder
     photos?: SortOrder
+    tags?: SortOrder
+    hours?: SortOrder
+    duration?: SortOrder
+    averageCheck?: SortOrder
+    rating?: SortOrder
+    menus?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13099,6 +13352,7 @@ export namespace Prisma {
   export type VenueAvgOrderByAggregateInput = {
     pricePerHour?: SortOrder
     capacity?: SortOrder
+    rating?: SortOrder
   }
 
   export type VenueMaxOrderByAggregateInput = {
@@ -13109,6 +13363,10 @@ export namespace Prisma {
     pricePerHour?: SortOrder
     capacity?: SortOrder
     address?: SortOrder
+    hours?: SortOrder
+    duration?: SortOrder
+    averageCheck?: SortOrder
+    rating?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13123,6 +13381,10 @@ export namespace Prisma {
     pricePerHour?: SortOrder
     capacity?: SortOrder
     address?: SortOrder
+    hours?: SortOrder
+    duration?: SortOrder
+    averageCheck?: SortOrder
+    rating?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13132,6 +13394,7 @@ export namespace Prisma {
   export type VenueSumOrderByAggregateInput = {
     pricePerHour?: SortOrder
     capacity?: SortOrder
+    rating?: SortOrder
   }
 
   export type EnumCategoryWithAggregatesFilter<$PrismaModel = never> = {
@@ -13176,6 +13439,48 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
+  export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
   export type EnumBookingStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.BookingStatus | EnumBookingStatusFieldRefInput<$PrismaModel>
     in?: $Enums.BookingStatus[] | ListEnumBookingStatusFieldRefInput<$PrismaModel>
@@ -13198,6 +13503,7 @@ export namespace Prisma {
     status?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    guestCount?: SortOrder
     cost?: SortOrder
     eventName?: SortOrder
     notes?: SortOrder
@@ -13209,6 +13515,7 @@ export namespace Prisma {
   }
 
   export type BookingAvgOrderByAggregateInput = {
+    guestCount?: SortOrder
     cost?: SortOrder
   }
 
@@ -13217,6 +13524,7 @@ export namespace Prisma {
     status?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    guestCount?: SortOrder
     cost?: SortOrder
     eventName?: SortOrder
     notes?: SortOrder
@@ -13232,6 +13540,7 @@ export namespace Prisma {
     status?: SortOrder
     startTime?: SortOrder
     endTime?: SortOrder
+    guestCount?: SortOrder
     cost?: SortOrder
     eventName?: SortOrder
     notes?: SortOrder
@@ -13243,6 +13552,7 @@ export namespace Prisma {
   }
 
   export type BookingSumOrderByAggregateInput = {
+    guestCount?: SortOrder
     cost?: SortOrder
   }
 
@@ -13668,6 +13978,10 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type VenueCreatetagsInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutVenuesInput = {
     create?: XOR<UserCreateWithoutVenuesInput, UserUncheckedCreateWithoutVenuesInput>
     connectOrCreate?: UserCreateOrConnectWithoutVenuesInput
@@ -13711,6 +14025,19 @@ export namespace Prisma {
   export type VenueUpdatephotosInput = {
     set?: string[]
     push?: string | string[]
+  }
+
+  export type VenueUpdatetagsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type NullableFloatFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type UserUpdateOneRequiredWithoutVenuesNestedInput = {
@@ -14049,6 +14376,17 @@ export namespace Prisma {
     not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type NestedEnumCategoryWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Category | EnumCategoryFieldRefInput<$PrismaModel>
     in?: $Enums.Category[] | ListEnumCategoryFieldRefInput<$PrismaModel>
@@ -14091,7 +14429,7 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+  export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | FloatFieldRefInput<$PrismaModel> | null
     in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
     notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
@@ -14099,7 +14437,35 @@ export namespace Prisma {
     lte?: number | FloatFieldRefInput<$PrismaModel>
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+    not?: NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedFloatNullableFilter<$PrismaModel>
+    _min?: NestedFloatNullableFilter<$PrismaModel>
+    _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string[]
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    lte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
   export type NestedEnumBookingStatusFilter<$PrismaModel = never> = {
@@ -14217,6 +14583,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -14232,6 +14599,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -14261,6 +14629,12 @@ export namespace Prisma {
     capacity?: number | null
     address?: string | null
     photos?: VenueCreatephotosInput | string[]
+    tags?: VenueCreatetagsInput | string[]
+    hours?: string | null
+    duration?: string | null
+    averageCheck?: string | null
+    rating?: number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -14276,6 +14650,12 @@ export namespace Prisma {
     capacity?: number | null
     address?: string | null
     photos?: VenueCreatephotosInput | string[]
+    tags?: VenueCreatetagsInput | string[]
+    hours?: string | null
+    duration?: string | null
+    averageCheck?: string | null
+    rating?: number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -14410,6 +14790,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFilter<"Booking"> | $Enums.BookingStatus
     startTime?: DateTimeFilter<"Booking"> | Date | string
     endTime?: DateTimeFilter<"Booking"> | Date | string
+    guestCount?: IntNullableFilter<"Booking"> | number | null
     cost?: DecimalFilter<"Booking"> | Decimal | DecimalJsLike | number | string
     eventName?: StringNullableFilter<"Booking"> | string | null
     notes?: StringNullableFilter<"Booking"> | string | null
@@ -14448,6 +14829,12 @@ export namespace Prisma {
     capacity?: IntNullableFilter<"Venue"> | number | null
     address?: StringNullableFilter<"Venue"> | string | null
     photos?: StringNullableListFilter<"Venue">
+    tags?: StringNullableListFilter<"Venue">
+    hours?: StringNullableFilter<"Venue"> | string | null
+    duration?: StringNullableFilter<"Venue"> | string | null
+    averageCheck?: StringNullableFilter<"Venue"> | string | null
+    rating?: FloatNullableFilter<"Venue"> | number | null
+    menus?: JsonNullableFilter<"Venue">
     isActive?: BoolFilter<"Venue"> | boolean
     createdAt?: DateTimeFilter<"Venue"> | Date | string
     updatedAt?: DateTimeFilter<"Venue"> | Date | string
@@ -14671,6 +15058,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -14686,6 +15074,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -14859,6 +15248,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -14874,6 +15264,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -15026,6 +15417,12 @@ export namespace Prisma {
     capacity?: number | null
     address?: string | null
     photos?: VenueCreatephotosInput | string[]
+    tags?: VenueCreatetagsInput | string[]
+    hours?: string | null
+    duration?: string | null
+    averageCheck?: string | null
+    rating?: number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15041,6 +15438,12 @@ export namespace Prisma {
     capacity?: number | null
     address?: string | null
     photos?: VenueCreatephotosInput | string[]
+    tags?: VenueCreatetagsInput | string[]
+    hours?: string | null
+    duration?: string | null
+    averageCheck?: string | null
+    rating?: number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15176,6 +15579,12 @@ export namespace Prisma {
     capacity?: NullableIntFieldUpdateOperationsInput | number | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     photos?: VenueUpdatephotosInput | string[]
+    tags?: VenueUpdatetagsInput | string[]
+    hours?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15191,6 +15600,12 @@ export namespace Prisma {
     capacity?: NullableIntFieldUpdateOperationsInput | number | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     photos?: VenueUpdatephotosInput | string[]
+    tags?: VenueUpdatetagsInput | string[]
+    hours?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15241,6 +15656,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -15256,6 +15672,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -15316,6 +15733,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15331,6 +15749,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15371,6 +15790,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -15389,6 +15809,12 @@ export namespace Prisma {
     capacity?: number | null
     address?: string | null
     photos?: VenueCreatephotosInput | string[]
+    tags?: VenueCreatetagsInput | string[]
+    hours?: string | null
+    duration?: string | null
+    averageCheck?: string | null
+    rating?: number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15474,6 +15900,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15489,6 +15916,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15504,6 +15932,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15522,6 +15951,12 @@ export namespace Prisma {
     capacity?: NullableIntFieldUpdateOperationsInput | number | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     photos?: VenueUpdatephotosInput | string[]
+    tags?: VenueUpdatetagsInput | string[]
+    hours?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15537,6 +15972,12 @@ export namespace Prisma {
     capacity?: NullableIntFieldUpdateOperationsInput | number | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     photos?: VenueUpdatephotosInput | string[]
+    tags?: VenueUpdatetagsInput | string[]
+    hours?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15552,6 +15993,12 @@ export namespace Prisma {
     capacity?: NullableIntFieldUpdateOperationsInput | number | null
     address?: NullableStringFieldUpdateOperationsInput | string | null
     photos?: VenueUpdatephotosInput | string[]
+    tags?: VenueUpdatetagsInput | string[]
+    hours?: NullableStringFieldUpdateOperationsInput | string | null
+    duration?: NullableStringFieldUpdateOperationsInput | string | null
+    averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
+    rating?: NullableFloatFieldUpdateOperationsInput | number | null
+    menus?: NullableJsonNullValueInput | InputJsonValue
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15575,6 +16022,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -15646,6 +16094,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15661,6 +16110,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15676,6 +16126,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15720,6 +16171,7 @@ export namespace Prisma {
     status?: $Enums.BookingStatus
     startTime: Date | string
     endTime: Date | string
+    guestCount?: number | null
     cost: Decimal | DecimalJsLike | number | string
     eventName?: string | null
     notes?: string | null
@@ -15734,6 +16186,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15749,6 +16202,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15764,6 +16218,7 @@ export namespace Prisma {
     status?: EnumBookingStatusFieldUpdateOperationsInput | $Enums.BookingStatus
     startTime?: DateTimeFieldUpdateOperationsInput | Date | string
     endTime?: DateTimeFieldUpdateOperationsInput | Date | string
+    guestCount?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     eventName?: NullableStringFieldUpdateOperationsInput | string | null
     notes?: NullableStringFieldUpdateOperationsInput | string | null

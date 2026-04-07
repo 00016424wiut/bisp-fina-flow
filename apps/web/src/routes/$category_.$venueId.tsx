@@ -1,12 +1,29 @@
-import { Link, useParams } from "react-router";
-import { useState } from "react";
-import { getVenue } from "../data/venues";
+import { Link, useParams, useNavigate } from "react-router";
+import { useState, useEffect } from "react";
+import BookingModal, { type BookingData } from "../components/BookingModal";
+import { authClient } from "@/lib/auth-client";
 
 export default function VenuePage() {
   const { category, venueId } = useParams<{ category: string; venueId: string }>();
-  const venue = getVenue(category ?? "", Number(venueId));
+  const [venue, setVenue] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [chatOpen, setChatOpen] = useState(false);
   const [question, setQuestion] = useState("");
+  const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingDone, setBookingDone] = useState(false);
+  const { data: session } = authClient.useSession();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch(`http://localhost:3000/api/venues/${venueId}`)
+      .then(r => r.json())
+      .then(data => { setVenue(data); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, [venueId]);
+
+  if (loading) {
+    return <div style={{ fontFamily: "Georgia, serif", padding: "48px", textAlign: "center" }}>Loading...</div>;
+  }
 
   if (!venue) {
     return (
@@ -60,8 +77,41 @@ export default function VenuePage() {
             <span style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", fontSize: "12px", color: "#a0a0a0" }}>⌕</span>
           </div>
           <span style={{ color: "#d4a0a4" }}>|</span>
-          <Link to="/login" style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}>Login</Link>
-          <Link to="/login" style={{ fontSize: "13px", color: "#2c2c2c", textDecoration: "none", border: "1px solid #2c2c2c", padding: "6px 16px", borderRadius: "20px" }}>Sign Up</Link>
+          <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+            {session ? (
+              // После логина — иконки корзины и профиля
+              <>
+                <button
+                  onClick={() => navigate ( "/cart" )}
+                  style={{ background: "none", border: "none", cursor: "pointer", fontSize: "20px", color: "#2c2c2c" }}
+                >
+                  🛒
+                </button>
+                <button
+                  onClick={() => authClient.signOut().then(() => window.location.href = "/")}
+                  style={{
+                    background: "none", border: "1px solid #e8d4d6",
+                    borderRadius: "50%", width: "32px", height: "32px",
+                    cursor: "pointer", fontSize: "14px", color: "#2c2c2c",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                  title="Sign out"
+                >
+                  👤
+                </button>
+              </>
+            ) : (
+              // Не залогинен — Login и Sign Up
+              <>
+                <Link to="/login" style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}>Login</Link>
+                <Link to="/onboarding" style={{
+                  fontSize: "13px", color: "#2c2c2c", textDecoration: "none",
+                  border: "1px solid #2c2c2c", padding: "6px 16px", borderRadius: "20px",
+                }}>Sign Up</Link>
+              </>
+            )}
+          </div>
+
         </div>
       </nav>
 
@@ -97,7 +147,7 @@ export default function VenuePage() {
             <div>
               <p style={{ fontSize: "13px", color: "#2c2c2c", margin: "0 0 12px", fontWeight: 400 }}>Menu:</p>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                {venue.menus.map((menu, i) => (
+                {venue.menus.map((menu:any, i:number) => (
                   <div key={i} style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                     border: "1px solid #e8d4d6", borderRadius: "6px",
@@ -132,6 +182,11 @@ export default function VenuePage() {
             <p style={{ fontSize: "13px", color: "#5a5a5a", margin: 0 }}>
               Open hours: {venue.hours}
             </p>
+            {venue.duration && (
+              <p style={{ fontSize: "13px", color: "#5a5a5a", margin: 0 }}>
+                Duration: {venue.duration}
+              </p>
+            )}
             <p style={{ fontSize: "13px", color: "#5a5a5a", margin: 0 }}>
               Location: {venue.location}
             </p>
@@ -145,7 +200,7 @@ export default function VenuePage() {
 
           {/* Теги */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "28px" }}>
-            {venue.tags.map(tag => (
+            {venue.tags.map((tag:any) => (
               <span key={tag} style={{
                 border: "1px solid #d4a0a4", borderRadius: "20px",
                 padding: "4px 14px", fontSize: "11px",
@@ -195,15 +250,71 @@ export default function VenuePage() {
           </div>
 
           {/* BOOK кнопка */}
-          <button style={{
-            width: "100%", background: "#2c2c2c", color: "white",
-            border: "none", borderRadius: "30px",
-            padding: "14px", fontSize: "14px",
-            fontFamily: "Georgia, serif", cursor: "pointer",
-            letterSpacing: "0.5px",
-          }}>
+          {/* BOOK кнопка */}
+          <button
+            onClick={() => setBookingOpen(true)}
+            style={{
+              width: "100%", background: "#2c2c2c", color: "white",
+              border: "none", borderRadius: "30px",
+              padding: "14px", fontSize: "14px",
+              fontFamily: "Georgia, serif", cursor: "pointer",
+              letterSpacing: "0.5px",
+            }}
+          >
             Book this venue
           </button>
+
+          {/* Попап бронирования */}
+          {bookingOpen && (
+            <BookingModal
+              venueName={venue.name}
+              venueId={String(venue.id)}
+              averageCheck={venue.averageCheck}
+              hours={venue.hours}
+              duration={venue.duration}
+              onClose={() => setBookingOpen(false)}
+              onConfirm={async (data: BookingData) => {
+                try {
+                  const response = await fetch("http://localhost:3000/api/bookings", {
+                    method: "POST",
+                    credentials: "include",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      venueId: String(venue.id),
+                      startTime: `${data.date}T${data.startTime}:00`,
+                      endTime: `${data.date}T${data.endTime}:00`,
+                      eventName: data.comment || venue.name,
+                      notes: data.comment,
+                      guestCount: data.guests,
+                    }),
+                  });
+
+                  if (!response.ok) {
+                    const err = await response.json();
+                    alert(err.error || "Booking failed");
+                    return;
+                  }
+
+                  setBookingOpen(false);
+                  setBookingDone(true);
+                } catch {
+                  alert("Server error. Please try again.");
+                }
+              }}
+
+            />
+          )}
+
+          {/* Уведомление об успехе */}
+          {bookingDone && (
+            <div style={{
+              position: "fixed", bottom: "32px", right: "32px", zIndex: 300,
+              background: "#2c2c2c", color: "white", borderRadius: "12px",
+              padding: "16px 24px", fontSize: "13px", fontFamily: "Georgia, serif",
+            }}>
+              ✓ Booking request sent! We'll contact you soon.
+            </div>
+          )}
 
           {/* Назад к каталогу */}
           <Link to={`/${category}`} style={{

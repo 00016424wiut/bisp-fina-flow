@@ -1,11 +1,25 @@
-import { Link, useParams } from "react-router";
-import { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router";
+import { useState, useEffect } from "react";
 import { categories } from "../data/categories";
+import { authClient } from "@/lib/auth-client";
 
 export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
   const data = categories[category ?? "restaurants"];
   const [selected, setSelected] = useState<string[]>([]);
+  const { data: session } = authClient.useSession();
+  const navigate = useNavigate();
+  const [venues, setVenues] = useState<any[]>([]);
+
+  useEffect(() => {
+    const categoryEnum = category?.toUpperCase().replace("-", "_");
+    fetch(`http://localhost:3000/api/venues?category=${categoryEnum}`, {
+      credentials: "include",
+    })
+      .then(r => r.json())
+      .then(data => setVenues(Array.isArray(data) ? data : []))
+      .catch(() => setVenues([]));
+  }, [category]);  
 
   // Если категория не найдена
   if (!data) {
@@ -67,8 +81,41 @@ export default function CategoryPage() {
             <span style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", fontSize: "12px", color: "#a0a0a0" }}>⌕</span>
           </div>
           <span style={{ color: "#d4a0a4" }}>|</span>
-          <Link to="/login" style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}>Login</Link>
-          <Link to="/login" style={{ fontSize: "13px", color: "#2c2c2c", textDecoration: "none", border: "1px solid #2c2c2c", padding: "6px 16px", borderRadius: "20px" }}>Sign Up</Link>
+          <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+            {session ? (
+              // После логина — иконки корзины и профиля
+              <>
+                <button
+                  onClick={() => navigate("/cart")}
+                  style={{ background: "none", border: "none", cursor: "pointer", fontSize: "20px", color: "#2c2c2c" }}
+                >
+                  🛒
+                </button>
+                <button
+                  onClick={() => authClient.signOut().then(() => window.location.href = "/")}
+                  style={{
+                    background: "none", border: "1px solid #e8d4d6",
+                    borderRadius: "50%", width: "32px", height: "32px",
+                    cursor: "pointer", fontSize: "14px", color: "#2c2c2c",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                  title="Sign out"
+                >
+                  👤
+                </button>
+              </>
+            ) : (
+              // Не залогинен — Login и Sign Up
+              <>
+                <Link to="/login" style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}>Login</Link>
+                <Link to="/onboarding" style={{
+                  fontSize: "13px", color: "#2c2c2c", textDecoration: "none",
+                  border: "1px solid #2c2c2c", padding: "6px 16px", borderRadius: "20px",
+                }}>Sign Up</Link>
+              </>
+            )}
+          </div>
+
         </div>
       </nav>
 
@@ -114,7 +161,7 @@ export default function CategoryPage() {
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px" }}>
-            {filtered.map(venue => (
+            {venues.map(venue => (
               <Link key={venue.id} to={`/${category}/${venue.id}`} style={{ textDecoration: "none" }}>
                 <div style={{
                   border: "1px solid #e8d4d6", borderRadius: "6px",
@@ -134,10 +181,9 @@ export default function CategoryPage() {
                   {/* Info */}
                   <div style={{ padding: "12px 14px 14px" }}>
                     <p style={{ fontSize: "13px", color: "#2c2c2c", margin: "0 0 4px" }}>{venue.name}</p>
-                    <p style={{ fontSize: "12px", color: "#7a7a7a", margin: "0 0 2px" }}>Open hours: {venue.hours}</p>
-                    <p style={{ fontSize: "12px", color: "#7a7a7a", margin: "0 0 2px" }}>Location: {venue.location}</p>
+                    <p style={{ fontSize: "12px", color: "#7a7a7a", margin: "0 0 2px" }}>Location: {venue.address}</p>
                     <p style={{ fontSize: "12px", color: "#7a7a7a", margin: "0 0 12px" }}>
-                      Rating: <span style={{ color: "#c4848a" }}>★ {venue.rating}</span>
+                      Capacity: <span style={{ color: "#c4848a" }}>{venue.capacity} people</span>
                     </p>
 
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", justifyContent: "flex-end" }}>

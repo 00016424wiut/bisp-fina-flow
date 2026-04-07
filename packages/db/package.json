@@ -10,6 +10,7 @@
       "default": "./src/*.ts"
     }
   },
+  
   "scripts": {
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
@@ -19,7 +20,8 @@
     "db:start": "docker compose up -d",
     "db:watch": "docker compose up",
     "db:stop": "docker compose stop",
-    "db:down": "docker compose down"
+    "db:down": "docker compose down",
+    "seed": "node --loader ts-node/esm prisma/speed.ts"
   },
   "dependencies": {
     "@bisp-final-flow/env": "*",
@@ -34,5 +36,9 @@
     "@types/pg": "^8.16.0",
     "prisma": "^7.2.0",
     "typescript": "^5"
+  },
+  "prisma": {
+    "seed": "node --loader ts-node/esm prisma/seed.ts"
   }
+  
 }

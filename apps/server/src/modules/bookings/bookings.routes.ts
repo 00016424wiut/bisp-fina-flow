@@ -1,10 +1,30 @@
 import { Router } from "express";
 import { requireAuth } from "../../middleware/auth.middleware";
 import { requireRole } from "../../middleware/role.middleware";
-import { getBookingById, confirmBooking, createBooking } from "./bookings.service";
+import { getBookingById, confirmBooking, createBooking, getBookedSlots, getMyBookings } from "./bookings.service";
 import { Role } from "@bisp-final-flow/db";
 
 const router = Router();
+
+// GET /api/bookings/slots?venueId=X&date=Y — публичный эндпоинт
+router.get("/slots", async (req, res) => {
+  const { venueId, date } = req.query;
+  if (!venueId || !date) {
+    res.status(400).json({ error: "venueId and date required" });
+    return;
+  }
+  const slots = await getBookedSlots(
+    String(venueId),
+    String(date)
+  );
+  res.json(slots);
+});
+
+router.get("/my", requireAuth, async (req, res) => {
+  const bookings = await getMyBookings(req.user!.id);
+  res.json(bookings);
+});
+
 
 // GET /api/bookings/:id
 router.get("/:id", requireAuth, async (req, res) => {
@@ -51,3 +71,4 @@ router.patch(
 );
 
 export default router;
+
