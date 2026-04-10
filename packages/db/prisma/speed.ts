@@ -1,4 +1,4 @@
-import { prisma } from '../src/index'
+import prisma from '../src/index'
 import dotenv from 'dotenv'
 import path from 'path'
 
