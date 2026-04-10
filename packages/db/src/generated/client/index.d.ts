@@ -1737,6 +1737,7 @@ export namespace Prisma {
     updatedAt: Date | null
     role: $Enums.Role | null
     companyId: string | null
+    phone: string | null
     telegramChatId: string | null
     telegramUsername: string | null
   }
@@ -1751,6 +1752,7 @@ export namespace Prisma {
     updatedAt: Date | null
     role: $Enums.Role | null
     companyId: string | null
+    phone: string | null
     telegramChatId: string | null
     telegramUsername: string | null
   }
@@ -1765,6 +1767,7 @@ export namespace Prisma {
     updatedAt: number
     role: number
     companyId: number
+    phone: number
     telegramChatId: number
     telegramUsername: number
     _all: number
@@ -1781,6 +1784,7 @@ export namespace Prisma {
     updatedAt?: true
     role?: true
     companyId?: true
+    phone?: true
     telegramChatId?: true
     telegramUsername?: true
   }
@@ -1795,6 +1799,7 @@ export namespace Prisma {
     updatedAt?: true
     role?: true
     companyId?: true
+    phone?: true
     telegramChatId?: true
     telegramUsername?: true
   }
@@ -1809,6 +1814,7 @@ export namespace Prisma {
     updatedAt?: true
     role?: true
     companyId?: true
+    phone?: true
     telegramChatId?: true
     telegramUsername?: true
     _all?: true
@@ -1896,6 +1902,7 @@ export namespace Prisma {
     updatedAt: Date
     role: $Enums.Role
     companyId: string | null
+    phone: string | null
     telegramChatId: string | null
     telegramUsername: string | null
     _count: UserCountAggregateOutputType | null
@@ -1927,6 +1934,7 @@ export namespace Prisma {
     updatedAt?: boolean
     role?: boolean
     companyId?: boolean
+    phone?: boolean
     telegramChatId?: boolean
     telegramUsername?: boolean
     company?: boolean | User$companyArgs<ExtArgs>
@@ -1947,6 +1955,7 @@ export namespace Prisma {
     updatedAt?: boolean
     role?: boolean
     companyId?: boolean
+    phone?: boolean
     telegramChatId?: boolean
     telegramUsername?: boolean
     company?: boolean | User$companyArgs<ExtArgs>
@@ -1962,6 +1971,7 @@ export namespace Prisma {
     updatedAt?: boolean
     role?: boolean
     companyId?: boolean
+    phone?: boolean
     telegramChatId?: boolean
     telegramUsername?: boolean
     company?: boolean | User$companyArgs<ExtArgs>
@@ -1977,11 +1987,12 @@ export namespace Prisma {
     updatedAt?: boolean
     role?: boolean
     companyId?: boolean
+    phone?: boolean
     telegramChatId?: boolean
     telegramUsername?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "role" | "companyId" | "telegramChatId" | "telegramUsername", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "role" | "companyId" | "phone" | "telegramChatId" | "telegramUsername", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     company?: boolean | User$companyArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
@@ -2016,6 +2027,7 @@ export namespace Prisma {
       updatedAt: Date
       role: $Enums.Role
       companyId: string | null
+      phone: string | null
       telegramChatId: string | null
       telegramUsername: string | null
     }, ExtArgs["result"]["user"]>
@@ -2455,6 +2467,7 @@ export namespace Prisma {
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly role: FieldRef<"User", 'Role'>
     readonly companyId: FieldRef<"User", 'String'>
+    readonly phone: FieldRef<"User", 'String'>
     readonly telegramChatId: FieldRef<"User", 'String'>
     readonly telegramUsername: FieldRef<"User", 'String'>
   }
@@ -7407,12 +7420,16 @@ export namespace Prisma {
     pricePerHour: Decimal | null
     capacity: number | null
     rating: number | null
+    minGuests: number | null
+    maxGuests: number | null
   }
 
   export type VenueSumAggregateOutputType = {
     pricePerHour: Decimal | null
     capacity: number | null
     rating: number | null
+    minGuests: number | null
+    maxGuests: number | null
   }
 
   export type VenueMinAggregateOutputType = {
@@ -7427,6 +7444,9 @@ export namespace Prisma {
     duration: string | null
     averageCheck: string | null
     rating: number | null
+    minGuests: number | null
+    maxGuests: number | null
+    menuUrl: string | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -7445,6 +7465,9 @@ export namespace Prisma {
     duration: string | null
     averageCheck: string | null
     rating: number | null
+    minGuests: number | null
+    maxGuests: number | null
+    menuUrl: string | null
     isActive: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -7466,6 +7489,10 @@ export namespace Prisma {
     averageCheck: number
     rating: number
     menus: number
+    amenities: number
+    minGuests: number
+    maxGuests: number
+    menuUrl: number
     isActive: number
     createdAt: number
     updatedAt: number
@@ -7478,12 +7505,16 @@ export namespace Prisma {
     pricePerHour?: true
     capacity?: true
     rating?: true
+    minGuests?: true
+    maxGuests?: true
   }
 
   export type VenueSumAggregateInputType = {
     pricePerHour?: true
     capacity?: true
     rating?: true
+    minGuests?: true
+    maxGuests?: true
   }
 
   export type VenueMinAggregateInputType = {
@@ -7498,6 +7529,9 @@ export namespace Prisma {
     duration?: true
     averageCheck?: true
     rating?: true
+    minGuests?: true
+    maxGuests?: true
+    menuUrl?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -7516,6 +7550,9 @@ export namespace Prisma {
     duration?: true
     averageCheck?: true
     rating?: true
+    minGuests?: true
+    maxGuests?: true
+    menuUrl?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -7537,6 +7574,10 @@ export namespace Prisma {
     averageCheck?: true
     rating?: true
     menus?: true
+    amenities?: true
+    minGuests?: true
+    maxGuests?: true
+    menuUrl?: true
     isActive?: true
     createdAt?: true
     updatedAt?: true
@@ -7645,6 +7686,10 @@ export namespace Prisma {
     averageCheck: string | null
     rating: number | null
     menus: JsonValue | null
+    amenities: string[]
+    minGuests: number | null
+    maxGuests: number | null
+    menuUrl: string | null
     isActive: boolean
     createdAt: Date
     updatedAt: Date
@@ -7685,6 +7730,10 @@ export namespace Prisma {
     averageCheck?: boolean
     rating?: boolean
     menus?: boolean
+    amenities?: boolean
+    minGuests?: boolean
+    maxGuests?: boolean
+    menuUrl?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -7709,6 +7758,10 @@ export namespace Prisma {
     averageCheck?: boolean
     rating?: boolean
     menus?: boolean
+    amenities?: boolean
+    minGuests?: boolean
+    maxGuests?: boolean
+    menuUrl?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -7731,6 +7784,10 @@ export namespace Prisma {
     averageCheck?: boolean
     rating?: boolean
     menus?: boolean
+    amenities?: boolean
+    minGuests?: boolean
+    maxGuests?: boolean
+    menuUrl?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -7753,13 +7810,17 @@ export namespace Prisma {
     averageCheck?: boolean
     rating?: boolean
     menus?: boolean
+    amenities?: boolean
+    minGuests?: boolean
+    maxGuests?: boolean
+    menuUrl?: boolean
     isActive?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     providerId?: boolean
   }
 
-  export type VenueOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "category" | "pricePerHour" | "capacity" | "address" | "photos" | "tags" | "hours" | "duration" | "averageCheck" | "rating" | "menus" | "isActive" | "createdAt" | "updatedAt" | "providerId", ExtArgs["result"]["venue"]>
+  export type VenueOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "description" | "category" | "pricePerHour" | "capacity" | "address" | "photos" | "tags" | "hours" | "duration" | "averageCheck" | "rating" | "menus" | "amenities" | "minGuests" | "maxGuests" | "menuUrl" | "isActive" | "createdAt" | "updatedAt" | "providerId", ExtArgs["result"]["venue"]>
   export type VenueInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     provider?: boolean | UserDefaultArgs<ExtArgs>
     bookings?: boolean | Venue$bookingsArgs<ExtArgs>
@@ -7793,6 +7854,10 @@ export namespace Prisma {
       averageCheck: string | null
       rating: number | null
       menus: Prisma.JsonValue | null
+      amenities: string[]
+      minGuests: number | null
+      maxGuests: number | null
+      menuUrl: string | null
       isActive: boolean
       createdAt: Date
       updatedAt: Date
@@ -8236,6 +8301,10 @@ export namespace Prisma {
     readonly averageCheck: FieldRef<"Venue", 'String'>
     readonly rating: FieldRef<"Venue", 'Float'>
     readonly menus: FieldRef<"Venue", 'Json'>
+    readonly amenities: FieldRef<"Venue", 'String[]'>
+    readonly minGuests: FieldRef<"Venue", 'Int'>
+    readonly maxGuests: FieldRef<"Venue", 'Int'>
+    readonly menuUrl: FieldRef<"Venue", 'String'>
     readonly isActive: FieldRef<"Venue", 'Boolean'>
     readonly createdAt: FieldRef<"Venue", 'DateTime'>
     readonly updatedAt: FieldRef<"Venue", 'DateTime'>
@@ -11121,6 +11190,7 @@ export namespace Prisma {
     updatedAt: 'updatedAt',
     role: 'role',
     companyId: 'companyId',
+    phone: 'phone',
     telegramChatId: 'telegramChatId',
     telegramUsername: 'telegramUsername'
   };
@@ -11198,6 +11268,10 @@ export namespace Prisma {
     averageCheck: 'averageCheck',
     rating: 'rating',
     menus: 'menus',
+    amenities: 'amenities',
+    minGuests: 'minGuests',
+    maxGuests: 'maxGuests',
+    menuUrl: 'menuUrl',
     isActive: 'isActive',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -11435,6 +11509,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
     companyId?: StringNullableFilter<"User"> | string | null
+    phone?: StringNullableFilter<"User"> | string | null
     telegramChatId?: StringNullableFilter<"User"> | string | null
     telegramUsername?: StringNullableFilter<"User"> | string | null
     company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
@@ -11454,6 +11529,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     role?: SortOrder
     companyId?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
     telegramChatId?: SortOrderInput | SortOrder
     telegramUsername?: SortOrderInput | SortOrder
     company?: CompanyOrderByWithRelationInput
@@ -11476,6 +11552,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
     companyId?: StringNullableFilter<"User"> | string | null
+    phone?: StringNullableFilter<"User"> | string | null
     telegramChatId?: StringNullableFilter<"User"> | string | null
     telegramUsername?: StringNullableFilter<"User"> | string | null
     company?: XOR<CompanyNullableScalarRelationFilter, CompanyWhereInput> | null
@@ -11495,6 +11572,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     role?: SortOrder
     companyId?: SortOrderInput | SortOrder
+    phone?: SortOrderInput | SortOrder
     telegramChatId?: SortOrderInput | SortOrder
     telegramUsername?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -11515,6 +11593,7 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     role?: EnumRoleWithAggregatesFilter<"User"> | $Enums.Role
     companyId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"User"> | string | null
     telegramChatId?: StringNullableWithAggregatesFilter<"User"> | string | null
     telegramUsername?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
@@ -11815,6 +11894,10 @@ export namespace Prisma {
     averageCheck?: StringNullableFilter<"Venue"> | string | null
     rating?: FloatNullableFilter<"Venue"> | number | null
     menus?: JsonNullableFilter<"Venue">
+    amenities?: StringNullableListFilter<"Venue">
+    minGuests?: IntNullableFilter<"Venue"> | number | null
+    maxGuests?: IntNullableFilter<"Venue"> | number | null
+    menuUrl?: StringNullableFilter<"Venue"> | string | null
     isActive?: BoolFilter<"Venue"> | boolean
     createdAt?: DateTimeFilter<"Venue"> | Date | string
     updatedAt?: DateTimeFilter<"Venue"> | Date | string
@@ -11838,6 +11921,10 @@ export namespace Prisma {
     averageCheck?: SortOrderInput | SortOrder
     rating?: SortOrderInput | SortOrder
     menus?: SortOrderInput | SortOrder
+    amenities?: SortOrder
+    minGuests?: SortOrderInput | SortOrder
+    maxGuests?: SortOrderInput | SortOrder
+    menuUrl?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11864,6 +11951,10 @@ export namespace Prisma {
     averageCheck?: StringNullableFilter<"Venue"> | string | null
     rating?: FloatNullableFilter<"Venue"> | number | null
     menus?: JsonNullableFilter<"Venue">
+    amenities?: StringNullableListFilter<"Venue">
+    minGuests?: IntNullableFilter<"Venue"> | number | null
+    maxGuests?: IntNullableFilter<"Venue"> | number | null
+    menuUrl?: StringNullableFilter<"Venue"> | string | null
     isActive?: BoolFilter<"Venue"> | boolean
     createdAt?: DateTimeFilter<"Venue"> | Date | string
     updatedAt?: DateTimeFilter<"Venue"> | Date | string
@@ -11887,6 +11978,10 @@ export namespace Prisma {
     averageCheck?: SortOrderInput | SortOrder
     rating?: SortOrderInput | SortOrder
     menus?: SortOrderInput | SortOrder
+    amenities?: SortOrder
+    minGuests?: SortOrderInput | SortOrder
+    maxGuests?: SortOrderInput | SortOrder
+    menuUrl?: SortOrderInput | SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -11916,6 +12011,10 @@ export namespace Prisma {
     averageCheck?: StringNullableWithAggregatesFilter<"Venue"> | string | null
     rating?: FloatNullableWithAggregatesFilter<"Venue"> | number | null
     menus?: JsonNullableWithAggregatesFilter<"Venue">
+    amenities?: StringNullableListFilter<"Venue">
+    minGuests?: IntNullableWithAggregatesFilter<"Venue"> | number | null
+    maxGuests?: IntNullableWithAggregatesFilter<"Venue"> | number | null
+    menuUrl?: StringNullableWithAggregatesFilter<"Venue"> | string | null
     isActive?: BoolWithAggregatesFilter<"Venue"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"Venue"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Venue"> | Date | string
@@ -12112,6 +12211,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     role?: $Enums.Role
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     company?: CompanyCreateNestedOneWithoutUsersInput
@@ -12131,6 +12231,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     role?: $Enums.Role
     companyId?: string | null
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -12148,6 +12249,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     company?: CompanyUpdateOneWithoutUsersNestedInput
@@ -12167,6 +12269,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -12185,6 +12288,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     role?: $Enums.Role
     companyId?: string | null
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
   }
@@ -12198,6 +12302,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -12212,6 +12317,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
   }
@@ -12542,6 +12648,10 @@ export namespace Prisma {
     averageCheck?: string | null
     rating?: number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueCreateamenitiesInput | string[]
+    minGuests?: number | null
+    maxGuests?: number | null
+    menuUrl?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12564,6 +12674,10 @@ export namespace Prisma {
     averageCheck?: string | null
     rating?: number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueCreateamenitiesInput | string[]
+    minGuests?: number | null
+    maxGuests?: number | null
+    menuUrl?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12586,6 +12700,10 @@ export namespace Prisma {
     averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueUpdateamenitiesInput | string[]
+    minGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    maxGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    menuUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12608,6 +12726,10 @@ export namespace Prisma {
     averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueUpdateamenitiesInput | string[]
+    minGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    maxGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    menuUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12630,6 +12752,10 @@ export namespace Prisma {
     averageCheck?: string | null
     rating?: number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueCreateamenitiesInput | string[]
+    minGuests?: number | null
+    maxGuests?: number | null
+    menuUrl?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12651,6 +12777,10 @@ export namespace Prisma {
     averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueUpdateamenitiesInput | string[]
+    minGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    maxGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    menuUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12671,6 +12801,10 @@ export namespace Prisma {
     averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueUpdateamenitiesInput | string[]
+    minGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    maxGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    menuUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12978,6 +13112,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     role?: SortOrder
     companyId?: SortOrder
+    phone?: SortOrder
     telegramChatId?: SortOrder
     telegramUsername?: SortOrder
   }
@@ -12992,6 +13127,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     role?: SortOrder
     companyId?: SortOrder
+    phone?: SortOrder
     telegramChatId?: SortOrder
     telegramUsername?: SortOrder
   }
@@ -13006,6 +13142,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     role?: SortOrder
     companyId?: SortOrder
+    phone?: SortOrder
     telegramChatId?: SortOrder
     telegramUsername?: SortOrder
   }
@@ -13343,6 +13480,10 @@ export namespace Prisma {
     averageCheck?: SortOrder
     rating?: SortOrder
     menus?: SortOrder
+    amenities?: SortOrder
+    minGuests?: SortOrder
+    maxGuests?: SortOrder
+    menuUrl?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13353,6 +13494,8 @@ export namespace Prisma {
     pricePerHour?: SortOrder
     capacity?: SortOrder
     rating?: SortOrder
+    minGuests?: SortOrder
+    maxGuests?: SortOrder
   }
 
   export type VenueMaxOrderByAggregateInput = {
@@ -13367,6 +13510,9 @@ export namespace Prisma {
     duration?: SortOrder
     averageCheck?: SortOrder
     rating?: SortOrder
+    minGuests?: SortOrder
+    maxGuests?: SortOrder
+    menuUrl?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13385,6 +13531,9 @@ export namespace Prisma {
     duration?: SortOrder
     averageCheck?: SortOrder
     rating?: SortOrder
+    minGuests?: SortOrder
+    maxGuests?: SortOrder
+    menuUrl?: SortOrder
     isActive?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13395,6 +13544,8 @@ export namespace Prisma {
     pricePerHour?: SortOrder
     capacity?: SortOrder
     rating?: SortOrder
+    minGuests?: SortOrder
+    maxGuests?: SortOrder
   }
 
   export type EnumCategoryWithAggregatesFilter<$PrismaModel = never> = {
@@ -13982,6 +14133,10 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type VenueCreateamenitiesInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutVenuesInput = {
     create?: XOR<UserCreateWithoutVenuesInput, UserUncheckedCreateWithoutVenuesInput>
     connectOrCreate?: UserCreateOrConnectWithoutVenuesInput
@@ -14038,6 +14193,11 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type VenueUpdateamenitiesInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type UserUpdateOneRequiredWithoutVenuesNestedInput = {
@@ -14635,6 +14795,10 @@ export namespace Prisma {
     averageCheck?: string | null
     rating?: number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueCreateamenitiesInput | string[]
+    minGuests?: number | null
+    maxGuests?: number | null
+    menuUrl?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -14656,6 +14820,10 @@ export namespace Prisma {
     averageCheck?: string | null
     rating?: number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueCreateamenitiesInput | string[]
+    minGuests?: number | null
+    maxGuests?: number | null
+    menuUrl?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -14835,6 +15003,10 @@ export namespace Prisma {
     averageCheck?: StringNullableFilter<"Venue"> | string | null
     rating?: FloatNullableFilter<"Venue"> | number | null
     menus?: JsonNullableFilter<"Venue">
+    amenities?: StringNullableListFilter<"Venue">
+    minGuests?: IntNullableFilter<"Venue"> | number | null
+    maxGuests?: IntNullableFilter<"Venue"> | number | null
+    menuUrl?: StringNullableFilter<"Venue"> | string | null
     isActive?: BoolFilter<"Venue"> | boolean
     createdAt?: DateTimeFilter<"Venue"> | Date | string
     updatedAt?: DateTimeFilter<"Venue"> | Date | string
@@ -14850,6 +15022,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     role?: $Enums.Role
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     company?: CompanyCreateNestedOneWithoutUsersInput
@@ -14868,6 +15041,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     role?: $Enums.Role
     companyId?: string | null
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
@@ -14900,6 +15074,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     company?: CompanyUpdateOneWithoutUsersNestedInput
@@ -14918,6 +15093,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
@@ -14934,6 +15110,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     role?: $Enums.Role
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     company?: CompanyCreateNestedOneWithoutUsersInput
@@ -14952,6 +15129,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     role?: $Enums.Role
     companyId?: string | null
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -14984,6 +15162,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     company?: CompanyUpdateOneWithoutUsersNestedInput
@@ -15002,6 +15181,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -15018,6 +15198,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     role?: $Enums.Role
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     sessions?: SessionCreateNestedManyWithoutUserInput
@@ -15035,6 +15216,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     role?: $Enums.Role
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -15154,6 +15336,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"User"> | Date | string
     role?: EnumRoleFilter<"User"> | $Enums.Role
     companyId?: StringNullableFilter<"User"> | string | null
+    phone?: StringNullableFilter<"User"> | string | null
     telegramChatId?: StringNullableFilter<"User"> | string | null
     telegramUsername?: StringNullableFilter<"User"> | string | null
   }
@@ -15213,6 +15396,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     role?: $Enums.Role
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     company?: CompanyCreateNestedOneWithoutUsersInput
@@ -15231,6 +15415,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     role?: $Enums.Role
     companyId?: string | null
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -15305,6 +15490,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     company?: CompanyUpdateOneWithoutUsersNestedInput
@@ -15323,6 +15509,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -15355,6 +15542,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     role?: $Enums.Role
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     company?: CompanyCreateNestedOneWithoutUsersInput
@@ -15373,6 +15561,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     role?: $Enums.Role
     companyId?: string | null
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
@@ -15423,6 +15612,10 @@ export namespace Prisma {
     averageCheck?: string | null
     rating?: number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueCreateamenitiesInput | string[]
+    minGuests?: number | null
+    maxGuests?: number | null
+    menuUrl?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15444,6 +15637,10 @@ export namespace Prisma {
     averageCheck?: string | null
     rating?: number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueCreateamenitiesInput | string[]
+    minGuests?: number | null
+    maxGuests?: number | null
+    menuUrl?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15505,6 +15702,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     company?: CompanyUpdateOneWithoutUsersNestedInput
@@ -15523,6 +15721,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
     companyId?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -15585,6 +15784,10 @@ export namespace Prisma {
     averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueUpdateamenitiesInput | string[]
+    minGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    maxGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    menuUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15606,6 +15809,10 @@ export namespace Prisma {
     averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueUpdateamenitiesInput | string[]
+    minGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    maxGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    menuUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15815,6 +16022,10 @@ export namespace Prisma {
     averageCheck?: string | null
     rating?: number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueCreateamenitiesInput | string[]
+    minGuests?: number | null
+    maxGuests?: number | null
+    menuUrl?: string | null
     isActive?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15957,6 +16168,10 @@ export namespace Prisma {
     averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueUpdateamenitiesInput | string[]
+    minGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    maxGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    menuUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15978,6 +16193,10 @@ export namespace Prisma {
     averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueUpdateamenitiesInput | string[]
+    minGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    maxGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    menuUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15999,6 +16218,10 @@ export namespace Prisma {
     averageCheck?: NullableStringFieldUpdateOperationsInput | string | null
     rating?: NullableFloatFieldUpdateOperationsInput | number | null
     menus?: NullableJsonNullValueInput | InputJsonValue
+    amenities?: VenueUpdateamenitiesInput | string[]
+    minGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    maxGuests?: NullableIntFieldUpdateOperationsInput | number | null
+    menuUrl?: NullableStringFieldUpdateOperationsInput | string | null
     isActive?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16013,6 +16236,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     role?: $Enums.Role
+    phone?: string | null
     telegramChatId?: string | null
     telegramUsername?: string | null
   }
@@ -16051,6 +16275,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUpdateManyWithoutUserNestedInput
@@ -16068,6 +16293,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
@@ -16085,6 +16311,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
     telegramChatId?: NullableStringFieldUpdateOperationsInput | string | null
     telegramUsername?: NullableStringFieldUpdateOperationsInput | string | null
   }

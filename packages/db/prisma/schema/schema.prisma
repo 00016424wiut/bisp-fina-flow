@@ -50,6 +50,10 @@ model Venue {
   averageCheck String?
   rating       Float?
   menus        Json?
+  amenities    String[]
+  minGuests    Int?
+  maxGuests    Int?
+  menuUrl      String?
 
   isActive     Boolean  @default(true)  // модерация admin
   createdAt    DateTime @default(now())

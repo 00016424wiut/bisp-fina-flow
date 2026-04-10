@@ -2,6 +2,8 @@ import { Link, useNavigate, useParams } from "react-router";
 import { useState, useEffect } from "react";
 import { categories } from "../data/categories";
 import { authClient } from "@/lib/auth-client";
+import { apiUrl } from "@/lib/api";
+import SearchBox from "../components/SearchBox";
 
 export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
@@ -13,7 +15,7 @@ export default function CategoryPage() {
 
   useEffect(() => {
     const categoryEnum = category?.toUpperCase().replace("-", "_");
-    fetch(`http://localhost:3000/api/venues?category=${categoryEnum}`, {
+    fetch(apiUrl(`/api/venues?category=${categoryEnum}`), {
       credentials: "include",
     })
       .then(r => r.json())
@@ -34,8 +36,11 @@ export default function CategoryPage() {
   const toggle = (f: string) =>
     setSelected(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f]);
 
-  const filtered = data.venues.filter(v =>
-    selected.length === 0 || selected.includes(v.filter)
+  // Filter API venues by selected tag chips. A venue matches when any of its
+  // tags is among the selected filters.
+  const filteredVenues = venues.filter(v =>
+    selected.length === 0 ||
+    (Array.isArray(v.tags) && v.tags.some((t: string) => selected.includes(t)))
   );
 
   return (
@@ -71,15 +76,7 @@ export default function CategoryPage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <div style={{ position: "relative" }}>
-            <input placeholder="Search" style={{
-              border: "1px solid #d4a0a4", borderRadius: "20px",
-              padding: "6px 32px 6px 14px", fontSize: "12px",
-              fontFamily: "Georgia, serif", background: "transparent",
-              outline: "none", color: "#2c2c2c", width: "160px",
-            }} />
-            <span style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", fontSize: "12px", color: "#a0a0a0" }}>⌕</span>
-          </div>
+          <SearchBox />
           <span style={{ color: "#d4a0a4" }}>|</span>
           <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
             {session ? (
@@ -92,7 +89,7 @@ export default function CategoryPage() {
                   🛒
                 </button>
                 <button
-                  onClick={() => authClient.signOut().then(() => window.location.href = "/")}
+                  onClick={() => navigate("/dashboard")}
                   style={{
                     background: "none", border: "1px solid #e8d4d6",
                     borderRadius: "50%", width: "32px", height: "32px",
@@ -156,12 +153,12 @@ export default function CategoryPage() {
         <main style={{ padding: "32px" }}>
           {/* Количество результатов */}
           <p style={{ fontSize: "12px", color: "#a0a0a0", margin: "0 0 20px" }}>
-            {filtered.length} {filtered.length === 1 ? "location" : "locations"} found
+            {filteredVenues.length} {filteredVenues.length === 1 ? "location" : "locations"} found
             {selected.length > 0 && ` · filtered by: ${selected.join(", ")}`}
           </p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px" }}>
-            {venues.map(venue => (
+            {filteredVenues.map(venue => (
               <Link key={venue.id} to={`/${category}/${venue.id}`} style={{ textDecoration: "none" }}>
                 <div style={{
                   border: "1px solid #e8d4d6", borderRadius: "6px",

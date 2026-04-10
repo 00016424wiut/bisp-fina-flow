@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { authClient } from "@/lib/auth-client";
+import { apiUrl } from "@/lib/api";
+import { fmtUZS, parseAverageCheck } from "@/lib/format";
 
 type BookingItem = {
     id: string;
@@ -12,11 +14,14 @@ type BookingItem = {
     startTime: string;
     endTime: string;
     guests: number;
-    cost: number;
+    averageCheck: number; // per-guest price, parsed from venue.averageCheck
     status: "PENDING" | "CONFIRMED" | "CANCELLED";
     eventName?: string;
     notes?: string;
 };
+
+// Live cost = averageCheck × guests
+const lineTotal = (item: BookingItem) => item.averageCheck * item.guests;
 
 const STATUS_COLORS: Record<string, string> = {
     CONFIRMED: "#4ade80",
@@ -40,13 +45,17 @@ function formatDate(d: string) {
         weekday: "short", month: "short", day: "numeric", year: "numeric",
     });
 }
-function fmt(cost: number) {
-    return cost.toLocaleString() + " UZS";
-}
 function mapBooking(b: any): BookingItem {
     const start = new Date(b.startTime);
     const end = new Date(b.endTime);
     const pad = (n: number) => String(n).padStart(2, "0");
+    const guests = b.guestCount ?? 1;
+    // Prefer the venue's averageCheck (per-guest price). Fall back to deriving
+    // it from the stored cost so older bookings still display a sensible total.
+    const parsedAvg = parseAverageCheck(b.venue?.averageCheck);
+    const averageCheck = parsedAvg > 0
+        ? parsedAvg
+        : Math.round(Number(b.cost) / Math.max(guests, 1));
     return {
         id: b.id,
         venueName: b.venue?.name ?? "Unknown venue",
@@ -54,8 +63,8 @@ function mapBooking(b: any): BookingItem {
         date: start.toISOString().split("T")[0],
         startTime: `${pad(start.getHours())}:${pad(start.getMinutes())}`,
         endTime: `${pad(end.getHours())}:${pad(end.getMinutes())}`,
-        guests: b.guestCount ?? 1,
-        cost: Number(b.cost),
+        guests,
+        averageCheck,
         status: b.status,
         eventName: b.eventName ?? "My Event",
         notes: b.notes,
@@ -97,7 +106,7 @@ export default function CartPage() {
 
     // Load bookings from real API
     useEffect(() => {
-        fetch("http://localhost:3000/api/bookings/my", { credentials: "include" })
+        fetch(apiUrl("/api/bookings/my"), { credentials: "include" })
             .then(r => r.json())
             .then(data => {
                 if (Array.isArray(data)) {
@@ -119,7 +128,7 @@ export default function CartPage() {
     }, {} as Record<string, BookingItem[]>);
 
     const selected = bookings.filter(b => selectedIds.has(b.id) && b.status !== "CANCELLED");
-    const total = selected.reduce((s, b) => s + b.cost, 0);
+    const total = selected.reduce((s, b) => s + lineTotal(b), 0);
 
     const toggleSelect = (id: string) => {
         setSelectedIds(prev => {
@@ -129,9 +138,27 @@ export default function CartPage() {
         });
     };
 
-    const handleRemove = (id: string) => {
+    const updateGuests = (id: string, guests: number) => {
+        setBookings(prev => prev.map(b =>
+            b.id === id ? { ...b, guests: Math.max(1, Math.floor(guests || 1)) } : b
+        ));
+    };
+
+    const handleRemove = async (id: string) => {
+        // Optimistic update — drop from local state immediately, roll back on error.
+        const snapshot = bookings;
         setBookings(prev => prev.filter(b => b.id !== id));
         setSelectedIds(prev => { const n = new Set(prev); n.delete(id); return n; });
+
+        try {
+            const res = await fetch(apiUrl(`/api/bookings/${id}/cancel`), {
+                method: "PATCH",
+                credentials: "include",
+            });
+            if (!res.ok) throw new Error("cancel failed");
+        } catch {
+            setBookings(snapshot);
+        }
     };
 
     const handleConfirm = () => setConfirmed(true);
@@ -163,7 +190,7 @@ export default function CartPage() {
             doc.setFontSize(11);
             doc.setTextColor(44, 44, 44);
             doc.text(item.venueName, 20, y);
-            doc.text(fmt(item.cost), 170, y, { align: "right" });
+            doc.text(fmtUZS(lineTotal(item)), 170, y, { align: "right" });
             y += 6;
             doc.setFontSize(9);
             doc.setTextColor(120);
@@ -178,7 +205,7 @@ export default function CartPage() {
         doc.setFontSize(12);
         doc.setTextColor(44, 44, 44);
         doc.text("Total:", 20, y);
-        doc.text(fmt(total), 170, y, { align: "right" });
+        doc.text(fmtUZS(total), 170, y, { align: "right" });
 
         doc.save("flow-booking.pdf");
     };
@@ -211,7 +238,7 @@ export default function CartPage() {
                             style={{ background: "none", border: "none", cursor: "pointer", fontSize: "20px", color: "#c4848a" }}>
                             🛒 <span style={{ fontSize: "12px", fontFamily: "Georgia, serif" }}>{bookings.length}</span>
                         </button>
-                        <button onClick={() => authClient.signOut().then(() => window.location.href = "/")}
+                        <button onClick={() => navigate("/dashboard")}
                             style={{ background: "none", border: "1px solid #e8d4d6", borderRadius: "50%", width: "32px", height: "32px", cursor: "pointer", fontSize: "14px", color: "#2c2c2c", display: "flex", alignItems: "center", justifyContent: "center" }}>
                             👤
                         </button>
@@ -271,7 +298,7 @@ export default function CartPage() {
                                         <td style={{ padding: "8px" }}>{item.startTime} — {item.endTime}</td>
                                         <td style={{ padding: "8px" }}>{item.guests}</td>
                                         <td style={{ padding: "8px" }}>{item.status}</td>
-                                        <td style={{ padding: "8px", textAlign: "right" }}>{fmt(item.cost)}</td>
+                                        <td style={{ padding: "8px", textAlign: "right" }}>{fmtUZS(lineTotal(item))}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -282,7 +309,7 @@ export default function CartPage() {
 
             <div style={{ borderTop: "2px solid #2c2c2c", paddingTop: "12px", display: "flex", justifyContent: "flex-end", gap: "32px" }}>
                 <span style={{ fontSize: "14px", color: "#2c2c2c" }}>Total:</span>
-                <span style={{ fontSize: "16px", fontWeight: "bold", color: "#2c2c2c" }}>{fmt(total)}</span>
+                <span style={{ fontSize: "16px", fontWeight: "bold", color: "#2c2c2c" }}>{fmtUZS(total)}</span>
             </div>
 
             <div style={{ marginTop: "12px", fontSize: "12px", color: "#7a7a7a" }}>
@@ -409,16 +436,59 @@ export default function CartPage() {
                                                                 <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
                                                                     <span style={{ fontSize: "12px", color: "#7a7a7a" }}>📅 {formatDate(item.date)}</span>
                                                                     <span style={{ fontSize: "12px", color: "#7a7a7a" }}>🕐 {item.startTime} — {item.endTime}</span>
-                                                                    <span style={{ fontSize: "12px", color: "#7a7a7a" }}>👥 {item.guests} guests</span>
+                                                                    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#7a7a7a" }}>
+                                                                        👥
+                                                                        <button
+                                                                            type="button"
+                                                                            disabled={isCancelled || item.guests <= 1}
+                                                                            onClick={() => updateGuests(item.id, item.guests - 1)}
+                                                                            style={{
+                                                                                width: "20px", height: "20px", borderRadius: "50%",
+                                                                                border: "1px solid #d4a0a4", background: "white",
+                                                                                cursor: isCancelled || item.guests <= 1 ? "not-allowed" : "pointer",
+                                                                                color: "#7a7a7a", fontSize: "12px", lineHeight: 1,
+                                                                                display: "flex", alignItems: "center", justifyContent: "center",
+                                                                                padding: 0,
+                                                                            }}
+                                                                        >−</button>
+                                                                        <input
+                                                                            type="number"
+                                                                            min={1}
+                                                                            value={item.guests}
+                                                                            disabled={isCancelled}
+                                                                            onChange={e => updateGuests(item.id, Number(e.target.value))}
+                                                                            style={{
+                                                                                width: "44px", textAlign: "center",
+                                                                                border: "1px solid #e8d4d6", borderRadius: "6px",
+                                                                                padding: "2px 4px", fontSize: "12px",
+                                                                                fontFamily: "Georgia, serif", color: "#2c2c2c",
+                                                                                background: "white", outline: "none",
+                                                                            }}
+                                                                        />
+                                                                        <button
+                                                                            type="button"
+                                                                            disabled={isCancelled}
+                                                                            onClick={() => updateGuests(item.id, item.guests + 1)}
+                                                                            style={{
+                                                                                width: "20px", height: "20px", borderRadius: "50%",
+                                                                                border: "1px solid #d4a0a4", background: "white",
+                                                                                cursor: isCancelled ? "not-allowed" : "pointer",
+                                                                                color: "#7a7a7a", fontSize: "12px", lineHeight: 1,
+                                                                                display: "flex", alignItems: "center", justifyContent: "center",
+                                                                                padding: 0,
+                                                                            }}
+                                                                        >+</button>
+                                                                        guests
+                                                                    </span>
+                                                                    {item.notes && (
+                                                                        <span style={{ fontSize: "12px", color: "#7a7a7a", fontStyle: "italic" }}>💬 “{item.notes}”</span>
+                                                                    )}
                                                                 </div>
-                                                                {item.notes && (
-                                                                    <p style={{ fontSize: "11px", color: "#a0a0a0", margin: "6px 0 0", fontStyle: "italic" }}>"{item.notes}"</p>
-                                                                )}
                                                             </div>
                                                         </div>
 
                                                         <div style={{ textAlign: "right", marginLeft: "20px" }}>
-                                                            <div style={{ fontSize: "15px", color: "#2c2c2c", marginBottom: "8px" }}>{fmt(item.cost)}</div>
+                                                            <div style={{ fontSize: "15px", color: "#2c2c2c", marginBottom: "8px" }}>{fmtUZS(lineTotal(item))}</div>
                                                             <button onClick={() => handleRemove(item.id)} style={{
                                                                 background: "none", border: "none", cursor: "pointer",
                                                                 fontSize: "11px", color: "#d4a0a4", fontFamily: "Georgia, serif",
@@ -432,7 +502,7 @@ export default function CartPage() {
 
                                     <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "8px", paddingRight: "4px" }}>
                                         <span style={{ fontSize: "12px", color: "#7a7a7a" }}>
-                                            Subtotal: {fmt(items.filter(i => selectedIds.has(i.id)).reduce((s, i) => s + i.cost, 0))}
+                                            Subtotal: {fmtUZS(items.filter(i => selectedIds.has(i.id)).reduce((s, i) => s + lineTotal(i), 0))}
                                         </span>
                                     </div>
                                 </div>
@@ -453,7 +523,7 @@ export default function CartPage() {
                                         {selected.map(b => (
                                             <div key={b.id} style={{ display: "flex", justifyContent: "space-between" }}>
                                                 <span style={{ fontSize: "12px", color: "#7a7a7a" }}>{b.venueName}</span>
-                                                <span style={{ fontSize: "12px", color: "#2c2c2c" }}>{fmt(b.cost)}</span>
+                                                <span style={{ fontSize: "12px", color: "#2c2c2c" }}>{fmtUZS(lineTotal(b))}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -462,7 +532,7 @@ export default function CartPage() {
                                 <div style={{ borderTop: "1px solid #e8d4d6", paddingTop: "12px", marginBottom: "20px" }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
                                         <span style={{ fontSize: "14px", color: "#2c2c2c" }}>Total</span>
-                                        <span style={{ fontSize: "18px", color: "#2c2c2c" }}>{fmt(total)}</span>
+                                        <span style={{ fontSize: "18px", color: "#2c2c2c" }}>{fmtUZS(total)}</span>
                                     </div>
                                 </div>
 

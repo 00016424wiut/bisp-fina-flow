@@ -24,6 +24,7 @@ export const auth = betterAuth({
     additionalFields: {
       role: { type: "string" as const, required: false },
       companyId: { type: "string" as const, required: false },
+      phone: { type: "string" as const, required: false },
       telegramChatId: { type: "string" as const, required: false },
       telegramUsername: { type: "string" as const, required: false },
     },

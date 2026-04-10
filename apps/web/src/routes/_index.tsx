@@ -3,11 +3,13 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
 const venues = [
-  { id: 1, name: "Rooftop Lounge", category: "Outdoor", price: 120, capacity: 50, rating: 4.8 },
-  { id: 2, name: "Private Loft", category: "Indoor", price: 95, capacity: 30, rating: 4.6 },
-  { id: 3, name: "Garden Terrace", category: "Outdoor", price: 80, capacity: 80, rating: 4.9 },
-  { id: 4, name: "Industrial Space", category: "Indoor", price: 150, capacity: 200, rating: 4.7 },
+  { id: 1, name: "Rooftop Lounge", category: "Outdoor", price: 1_200_000, capacity: 50, rating: 4.8 },
+  { id: 2, name: "Private Loft", category: "Indoor", price: 950_000, capacity: 30, rating: 4.6 },
+  { id: 3, name: "Garden Terrace", category: "Outdoor", price: 800_000, capacity: 80, rating: 4.9 },
+  { id: 4, name: "Industrial Space", category: "Indoor", price: 1_500_000, capacity: 200, rating: 4.7 },
 ];
+
+const fmtUZS = (n: number) => `${n.toLocaleString()} UZS`;
 
 const Divider = () => (
   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 48px" }}>
@@ -62,7 +64,7 @@ export default function Home() {
                 🛒
               </button>
               <button
-                onClick={() => authClient.signOut().then(() => window.location.href = "/")}
+                onClick={() => navigate("/dashboard")}
                 style={{
                   background: "none", border: "1px solid #e8d4d6",
                   borderRadius: "50%", width: "32px", height: "32px",
@@ -220,7 +222,7 @@ export default function Home() {
                   {venue.category} · {venue.capacity} guests
                 </p>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "13px", color: "#2c2c2c" }}>${venue.price}<span style={{ color: "#a0a0a0", fontSize: "11px" }}>/hr</span></span>
+                  <span style={{ fontSize: "13px", color: "#2c2c2c" }}>{fmtUZS(venue.price)}<span style={{ color: "#a0a0a0", fontSize: "11px" }}>/hr</span></span>
                   <span style={{ fontSize: "11px", background: "#f0dde0", color: "#c4848a", padding: "3px 10px", borderRadius: "12px" }}>Book</span>
                 </div>
               </div>

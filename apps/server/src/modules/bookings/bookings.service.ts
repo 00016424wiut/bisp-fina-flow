@@ -28,6 +28,14 @@ export function calculateCost(
   return Math.round(pricePerHour * hours * 100) / 100
 }
 
+// Парсит averageCheck (например "200,000 UZS" / "200.000 UZS" / "1 200 000")
+// в чистое число. Возвращает 0 если строка пустая или нечитаемая.
+export function parseAverageCheck(value: string | null | undefined): number {
+  if (!value) return 0;
+  const digits = value.replace(/\D+/g, "");
+  return digits ? Number(digits) : 0;
+}
+
 // Получить занятые временные слоты для конкретной площадки и даты
 export async function getBookedSlots(
   venueId: string,
@@ -118,11 +126,15 @@ export async function createBooking(
   const startTime = new Date(data.startTime)
   const endTime = new Date(data.endTime)
 
-  const cost = calculateCost(
-    Number(venue.pricePerHour),
-    startTime,
-    endTime
-  )
+  // Новая формула: averageCheck × guestCount.
+  // Fallback на pricePerHour × hours, если у площадки нет averageCheck
+  // (например мастер-классы / активности с почасовой оплатой).
+  const guests = data.guestCount ?? 1
+  const avg = parseAverageCheck(venue.averageCheck)
+  const cost =
+    avg > 0
+      ? avg * guests
+      : calculateCost(Number(venue.pricePerHour), startTime, endTime)
 
   return prisma.booking.create({
     data: {
@@ -138,6 +150,37 @@ export async function createBooking(
       status: BookingStatus.PENDING,
     },
   })
+}
+
+// Менеджер отменяет своё бронирование. Только своё, только если оно ещё не отменено.
+// Если по нему уже создан Expense (значит был CONFIRMED) — удаляем его в той же транзакции,
+// чтобы аналитика не показывала несостоявшийся расход.
+export async function cancelBooking(
+  bookingId: string,
+  managerId: string
+): Promise<Booking> {
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.booking.findUnique({
+      where: { id: bookingId },
+    });
+
+    if (!existing) {
+      throw new Error("Booking not found");
+    }
+    if (existing.managerId !== managerId) {
+      throw new Error("Forbidden");
+    }
+    if (existing.status === BookingStatus.CANCELLED) {
+      return existing;
+    }
+
+    await tx.expense.deleteMany({ where: { bookingId } });
+
+    return tx.booking.update({
+      where: { id: bookingId },
+      data: { status: BookingStatus.CANCELLED },
+    });
+  });
 }
 
 export async function getMyBookings(managerId: string) {

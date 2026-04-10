@@ -130,6 +130,7 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt',
   role: 'role',
   companyId: 'companyId',
+  phone: 'phone',
   telegramChatId: 'telegramChatId',
   telegramUsername: 'telegramUsername'
 };
@@ -192,6 +193,10 @@ exports.Prisma.VenueScalarFieldEnum = {
   averageCheck: 'averageCheck',
   rating: 'rating',
   menus: 'menus',
+  amenities: 'amenities',
+  minGuests: 'minGuests',
+  maxGuests: 'maxGuests',
+  menuUrl: 'menuUrl',
   isActive: 'isActive',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

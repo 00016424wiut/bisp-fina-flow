@@ -3,6 +3,7 @@
 // ================================================================
 
 import { useState, useEffect } from "react";
+import { apiUrl } from "@/lib/api";
 
 
 type Props = {
@@ -109,7 +110,7 @@ export default function BookingModal({ venueName, averageCheck, hours, duration,
 
   useEffect(() => {
     if (!venueId || !data.date) return;
-    fetch(`http://localhost:3000/api/bookings/slots?venueId=${venueId}&date=${data.date}`)
+    fetch(apiUrl(`/api/bookings/slots?venueId=${venueId}&date=${data.date}`))
       .then(r => r.json())
       .then(setBookedSlots)
       .catch(() => { });

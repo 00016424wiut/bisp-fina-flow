@@ -3,6 +3,9 @@ dist/
 /build
 /out/
 
+# user-uploaded files (photos, menus)
+uploads/
+
 # dev
 .yarn/
 !.yarn/patches

@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { authClient } from "@/lib/auth-client";
+import { apiUrl } from "@/lib/api";
 import { toast } from "sonner";
 
 const inputStyle = {
@@ -77,7 +78,7 @@ export default function Signup() {
       );
 
       // Шаг 2 — onboarding: создать компанию + установить роль
-      const res = await fetch("http://localhost:3000/api/onboarding", {
+      const res = await fetch(apiUrl("/api/onboarding"), {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

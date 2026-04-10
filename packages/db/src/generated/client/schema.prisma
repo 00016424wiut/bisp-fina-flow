@@ -11,6 +11,7 @@ model User {
   role             Role     @default(MANAGER)
   companyId        String?
   company          Company? @relation(fields: [companyId], references: [id])
+  phone            String?
   telegramChatId   String?
   telegramUsername String?
 
@@ -125,6 +126,10 @@ model Venue {
   averageCheck String?
   rating       Float?
   menus        Json?
+  amenities    String[]
+  minGuests    Int?
+  maxGuests    Int?
+  menuUrl      String?
 
   isActive  Boolean  @default(true) // модерация admin
   createdAt DateTime @default(now())

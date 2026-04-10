@@ -1,12 +1,15 @@
 import { Link, useParams, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
 import BookingModal, { type BookingData } from "../components/BookingModal";
+import SearchBox from "../components/SearchBox";
 import { authClient } from "@/lib/auth-client";
+import { apiUrl } from "@/lib/api";
 
 export default function VenuePage() {
   const { category, venueId } = useParams<{ category: string; venueId: string }>();
   const [venue, setVenue] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [activePhoto, setActivePhoto] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
   const [question, setQuestion] = useState("");
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -15,7 +18,7 @@ export default function VenuePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:3000/api/venues/${venueId}`)
+    fetch(apiUrl(`/api/venues/${venueId}`))
       .then(r => r.json())
       .then(data => { setVenue(data); setLoading(false); })
       .catch(() => setLoading(false));
@@ -67,28 +70,20 @@ export default function VenuePage() {
           </div>
         </div>
         <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
-          <div style={{ position: "relative" }}>
-            <input placeholder="Search" style={{
-              border: "1px solid #d4a0a4", borderRadius: "20px",
-              padding: "6px 32px 6px 14px", fontSize: "12px",
-              fontFamily: "Georgia, serif", background: "transparent",
-              outline: "none", color: "#2c2c2c", width: "160px",
-            }} />
-            <span style={{ position: "absolute", right: "10px", top: "50%", transform: "translateY(-50%)", fontSize: "12px", color: "#a0a0a0" }}>⌕</span>
-          </div>
+          <SearchBox />
           <span style={{ color: "#d4a0a4" }}>|</span>
           <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
             {session ? (
               // После логина — иконки корзины и профиля
               <>
                 <button
-                  onClick={() => navigate ( "/cart" )}
+                  onClick={() => navigate("/cart")}
                   style={{ background: "none", border: "none", cursor: "pointer", fontSize: "20px", color: "#2c2c2c" }}
                 >
                   🛒
                 </button>
                 <button
-                  onClick={() => authClient.signOut().then(() => window.location.href = "/")}
+                  onClick={() => navigate("/dashboard")}
                   style={{
                     background: "none", border: "1px solid #e8d4d6",
                     borderRadius: "50%", width: "32px", height: "32px",
@@ -120,14 +115,18 @@ export default function VenuePage() {
 
         {/* LEFT: Фото + описание + меню */}
         <div>
-          {/* Фото */}
+          {/* Фото галерея */}
           <div style={{
             width: "100%", height: "280px",
             background: "#f0dde0", borderRadius: "6px",
-            marginBottom: "24px", position: "relative", overflow: "hidden",
+            marginBottom: "12px", position: "relative", overflow: "hidden",
           }}>
-            {venue.photos.length > 0 ? (
-              <img src={venue.photos[0]} alt={venue.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            {venue.photos && venue.photos.length > 0 ? (
+              <img
+                src={apiUrl(venue.photos[activePhoto] ?? venue.photos[0])}
+                alt={venue.name}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
             ) : (
               <>
                 <div style={{ position: "absolute", top: "16px", left: "16px", width: "55%", height: "55%", background: "#d9c4c6", borderRadius: "4px" }} />
@@ -137,34 +136,53 @@ export default function VenuePage() {
             )}
           </div>
 
+          {/* Миниатюры */}
+          {venue.photos && venue.photos.length > 1 && (
+            <div style={{
+              display: "flex", gap: "8px", marginBottom: "24px",
+              overflowX: "auto", paddingBottom: "4px",
+            }}>
+              {venue.photos.map((photo: string, i: number) => (
+                <button
+                  key={i}
+                  onClick={() => setActivePhoto(i)}
+                  style={{
+                    flexShrink: 0, width: "72px", height: "56px",
+                    border: i === activePhoto ? "2px solid #c4848a" : "1px solid #e8d4d6",
+                    borderRadius: "4px", padding: 0, cursor: "pointer",
+                    background: "#f0dde0", overflow: "hidden",
+                  }}
+                >
+                  <img src={apiUrl(photo)} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </button>
+              ))}
+            </div>
+          )}
+          {(!venue.photos || venue.photos.length <= 1) && <div style={{ marginBottom: "12px" }} />}
+
           {/* Описание */}
           <p style={{ fontSize: "13px", color: "#5a5a5a", lineHeight: 1.7, margin: "0 0 28px" }}>
             {venue.description}
           </p>
 
-          {/* Меню файлы */}
-          {venue.menus.length > 0 && (
+          {/* Меню PDF */}
+          {venue.menuUrl && (
             <div>
               <p style={{ fontSize: "13px", color: "#2c2c2c", margin: "0 0 12px", fontWeight: 400 }}>Menu:</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                {venue.menus.map((menu:any, i:number) => (
-                  <div key={i} style={{
-                    display: "flex", alignItems: "center", justifyContent: "space-between",
-                    border: "1px solid #e8d4d6", borderRadius: "6px",
-                    padding: "10px 14px",
-                  }}>
-                    <span style={{ fontSize: "12px", color: "#5a5a5a", fontFamily: "Georgia, serif" }}>
-                      {menu.name}
-                    </span>
-                    <div style={{ display: "flex", gap: "12px" }}>
-                      <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: "14px", color: "#7a7a7a" }}
-                        title="Download">⬇</button>
-                      <button style={{ background: "none", border: "none", cursor: "pointer", fontSize: "14px", color: "#7a7a7a" }}
-                        title="Preview">👁</button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <a
+                href={apiUrl(venue.menuUrl)}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: "10px",
+                  border: "1px solid #e8d4d6", borderRadius: "6px",
+                  padding: "10px 16px", fontSize: "12px",
+                  color: "#5a5a5a", textDecoration: "none",
+                  fontFamily: "Georgia, serif",
+                }}
+              >
+                📄 View menu (PDF)
+              </a>
             </div>
           )}
         </div>
@@ -191,7 +209,7 @@ export default function VenuePage() {
               Location: {venue.location}
             </p>
             <p style={{ fontSize: "13px", color: "#5a5a5a", margin: 0 }}>
-              Capacity: {venue.capacity} people
+              Capacity: {venue.minGuests ?? 1}–{venue.maxGuests ?? venue.capacity ?? "—"} guests
             </p>
             <p style={{ fontSize: "13px", color: "#5a5a5a", margin: 0 }}>
               Average check: {venue.averageCheck}
@@ -199,8 +217,8 @@ export default function VenuePage() {
           </div>
 
           {/* Теги */}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "28px" }}>
-            {venue.tags.map((tag:any) => (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+            {venue.tags && venue.tags.map((tag: any) => (
               <span key={tag} style={{
                 border: "1px solid #d4a0a4", borderRadius: "20px",
                 padding: "4px 14px", fontSize: "11px",
@@ -210,6 +228,22 @@ export default function VenuePage() {
               </span>
             ))}
           </div>
+
+          {/* Удобства */}
+          {venue.amenities && venue.amenities.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "28px" }}>
+              {venue.amenities.map((a: string) => (
+                <span key={a} style={{
+                  border: "1px solid #a0c4a4", borderRadius: "20px",
+                  padding: "4px 14px", fontSize: "11px",
+                  color: "#5a5a5a", fontFamily: "Georgia, serif",
+                }}>
+                  {a}
+                </span>
+              ))}
+            </div>
+          )}
+          {(!venue.amenities || venue.amenities.length === 0) && <div style={{ marginBottom: "16px" }} />}
 
           {/* Чат блок */}
           <div style={{
@@ -275,7 +309,7 @@ export default function VenuePage() {
               onClose={() => setBookingOpen(false)}
               onConfirm={async (data: BookingData) => {
                 try {
-                  const response = await fetch("http://localhost:3000/api/bookings", {
+                  const response = await fetch(apiUrl("/api/bookings"), {
                     method: "POST",
                     credentials: "include",
                     headers: { "Content-Type": "application/json" },
@@ -283,7 +317,7 @@ export default function VenuePage() {
                       venueId: String(venue.id),
                       startTime: `${data.date}T${data.startTime}:00`,
                       endTime: `${data.date}T${data.endTime}:00`,
-                      eventName: data.comment || venue.name,
+                      eventName: venue.name,
                       notes: data.comment,
                       guestCount: data.guests,
                     }),

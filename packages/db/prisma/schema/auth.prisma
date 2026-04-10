@@ -11,6 +11,7 @@ model User {
   role             Role     @default(MANAGER)
   companyId        String?
   company          Company? @relation(fields: [companyId], references: [id])
+  phone            String?
   telegramChatId   String?
   telegramUsername String?
 
