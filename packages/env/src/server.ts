@@ -11,6 +11,7 @@ export const env = createEnv({
     CORS_ORIGIN_BUILD: z.url().optional(),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
     TELEGRAM_BOT_TOKEN: z.string().min(1),
+    GITHUB_MODELS_TOKEN: z.string().min(1),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

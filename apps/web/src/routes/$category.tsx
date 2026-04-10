@@ -168,11 +168,19 @@ export default function CategoryPage() {
                   onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 16px rgba(212,160,164,0.2)"}
                   onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.boxShadow = "none"}
                 >
-                  {/* Image placeholder */}
-                  <div style={{ position: "relative", background: "#f0dde0", height: "160px" }}>
-                    <div style={{ position: "absolute", top: "12px", left: "12px", width: "55%", height: "55%", background: "#d9c4c6", borderRadius: "2px" }} />
-                    <div style={{ position: "absolute", bottom: "12px", right: "12px", width: "45%", height: "40%", background: "#c9b4b6", borderRadius: "2px" }} />
-                    <div style={{ position: "absolute", bottom: "28px", left: "30%", width: "40%", height: "35%", background: "#b9a4a6", borderRadius: "2px" }} />
+                  {/* Venue image */}
+                  <div style={{ background: "#f0dde0", height: "160px", overflow: "hidden" }}>
+                    {venue.photos?.[0] ? (
+                      <img
+                        src={apiUrl(venue.photos[0])}
+                        alt={venue.name}
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: "#b9a4a6", fontSize: "13px" }}>
+                        No image
+                      </div>
+                    )}
                   </div>
 
                   {/* Info */}

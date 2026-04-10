@@ -9,6 +9,7 @@ import venuesRouter from "./modules/venues/venues.routes";
 import bookingsRouter from "./modules/bookings/bookings.routes";
 import expenseRouter from "./modules/expenses/expenses.routes";
 import uploadsRouter from "./modules/uploads/uploads.routes";
+import aiSearchRouter from "./modules/venues/ai-search";
 import { fromNodeHeaders } from "better-auth/node";
 import { prisma } from "@bisp-final-flow/db";
 
@@ -39,8 +40,9 @@ app.get("/", (_req, res) => {
   res.status(200).send("OK");
 });
 
-app.listen(3000, () => {
-  console.log("Server is running on http://localhost:3000");
+const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
 
 app.get("/api/me", requireAuth, async (req, res) => {
@@ -57,6 +59,7 @@ app.get("/api/me", requireAuth, async (req, res) => {
   res.json(user);
 });
 
+app.use("/api/ai-search", aiSearchRouter);
 app.use("/api/venues", venuesRouter);
 app.use("/api/bookings", bookingsRouter);
 

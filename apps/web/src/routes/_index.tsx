@@ -1,6 +1,18 @@
 import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { apiUrl } from "@/lib/api";
+
+type AiSearchResult = {
+  id: string;
+  name: string;
+  score: number;
+  reason: string;
+  category: string;
+  pricePerHour: string;
+  capacity: number | null;
+  rating: number | null;
+};
 
 const venues = [
   { id: 1, name: "Rooftop Lounge", category: "Outdoor", price: 1_200_000, capacity: 50, rating: 4.8 },
@@ -27,6 +39,34 @@ export default function Home() {
   const [message, setMessage] = useState("");
   const { data: session } = authClient.useSession();
   const navigate = useNavigate();
+
+  const [vibeQuery, setVibeQuery] = useState("");
+  const [vibeResults, setVibeResults] = useState<AiSearchResult[]>([]);
+  const [vibeLoading, setVibeLoading] = useState(false);
+  const [vibeSearched, setVibeSearched] = useState(false);
+
+  const handleVibeSearch = async () => {
+    if (!vibeQuery.trim()) return;
+    setVibeLoading(true);
+    setVibeSearched(true);
+    try {
+      const res = await fetch(apiUrl("/api/ai-search"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ query: vibeQuery.trim() }),
+      });
+      const data = await res.json();
+      setVibeResults(data.results ?? []);
+    } catch {
+      setVibeResults([]);
+    } finally {
+      setVibeLoading(false);
+    }
+  };
+
+  const categorySlug = (cat: string) =>
+    cat.toLowerCase().replace(/_/g, "-");
 
   return (
     <div style={{ fontFamily: "Georgia, serif", background: "#ffffff", minHeight: "100vh" }}>
@@ -130,6 +170,103 @@ export default function Home() {
             whiteSpace: "nowrap",
           }}>Let's Party</button>
         </div>
+
+        {/* AI Vibe Search */}
+        <div style={{ marginTop: "24px" }}>
+          <p style={{ fontSize: "13px", color: "#7a7a7a", fontStyle: "italic", margin: "0 0 12px" }}>
+            or describe your perfect vibe...
+          </p>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: "0",
+            background: "white", border: "1px solid #d4a0a4",
+            borderRadius: "40px", padding: "6px 6px 6px 24px",
+            boxShadow: "0 2px 20px rgba(212,160,164,0.1)",
+            maxWidth: "600px", width: "100%",
+          }}>
+            <input
+              type="text"
+              placeholder="e.g. cozy rooftop with live jazz for 20 people"
+              value={vibeQuery}
+              onChange={e => setVibeQuery(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && handleVibeSearch()}
+              style={{
+                border: "none", outline: "none", fontSize: "13px",
+                fontFamily: "Georgia, serif", color: "#2c2c2c",
+                background: "transparent", flex: 1, minWidth: 0,
+              }}
+            />
+            <button
+              onClick={handleVibeSearch}
+              disabled={vibeLoading}
+              style={{
+                background: "#2c2c2c", color: "white", border: "none",
+                borderRadius: "30px", padding: "10px 24px", fontSize: "13px",
+                fontFamily: "Georgia, serif", cursor: vibeLoading ? "wait" : "pointer",
+                whiteSpace: "nowrap", opacity: vibeLoading ? 0.7 : 1,
+              }}
+            >
+              {vibeLoading ? "Searching..." : "Find My Vibe"}
+            </button>
+          </div>
+        </div>
+
+        {/* Vibe Search Results */}
+        {vibeLoading && (
+          <p style={{ fontSize: "13px", color: "#c4848a", fontStyle: "italic", marginTop: "20px" }}>
+            Searching for your vibe...
+          </p>
+        )}
+
+        {!vibeLoading && vibeSearched && vibeResults.length === 0 && (
+          <p style={{ fontSize: "13px", color: "#7a7a7a", marginTop: "20px" }}>
+            No venues matched your vibe. Try a different description.
+          </p>
+        )}
+
+        {!vibeLoading && vibeResults.length > 0 && (
+          <div style={{ marginTop: "28px", maxWidth: "800px", marginLeft: "auto", marginRight: "auto" }}>
+            <p style={{ fontSize: "12px", color: "#a0a0a0", margin: "0 0 16px" }}>
+              {vibeResults.length} {vibeResults.length === 1 ? "match" : "matches"} found
+            </p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
+              {vibeResults.map(r => (
+                <Link
+                  key={r.id}
+                  to={`/${categorySlug(r.category)}/${r.id}`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <div style={{
+                    background: "white", border: "1px solid #e8d4d6",
+                    borderRadius: "8px", padding: "16px", textAlign: "left",
+                    transition: "box-shadow 0.2s", cursor: "pointer",
+                  }}
+                    onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 4px 16px rgba(212,160,164,0.2)")}
+                    onMouseLeave={e => (e.currentTarget.style.boxShadow = "none")}
+                  >
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
+                      <span style={{ fontSize: "14px", color: "#2c2c2c" }}>{r.name}</span>
+                      <span style={{
+                        fontSize: "11px", background: "#f0dde0", color: "#c4848a",
+                        padding: "3px 10px", borderRadius: "12px",
+                      }}>
+                        {r.score}% match
+                      </span>
+                    </div>
+                    <p style={{ fontSize: "12px", color: "#7a7a7a", fontStyle: "italic", margin: "0 0 8px", lineHeight: 1.5 }}>
+                      {r.reason}
+                    </p>
+                    <div style={{ fontSize: "11px", color: "#a0a0a0", display: "flex", gap: "12px" }}>
+                      <span>{categorySlug(r.category).replace(/-/g, " ")}</span>
+                      {r.capacity && <span>{r.capacity} guests</span>}
+                      <span>{Number(r.pricePerHour).toLocaleString()} UZS/hr</span>
+                      {r.rating && <span>★ {r.rating}</span>}
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
       </section>
 
