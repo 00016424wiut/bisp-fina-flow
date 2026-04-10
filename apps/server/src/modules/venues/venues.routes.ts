@@ -2,8 +2,8 @@ import { Router } from "express";
 import { requireAuth } from "../../middleware/auth.middleware";
 import { requireRole } from "../../middleware/role.middleware";
 import { getVenues, createVenue, updateVenue } from "./venues.service";
-import { Role } from "@bisp-final-flow/db";
-import { prisma } from "@bisp-final-flow/db";
+import prisma from "@bisp-final-flow/db";
+import { Role } from "@bisp-final-flow/db/generated/client";
 
 const router = Router();
 

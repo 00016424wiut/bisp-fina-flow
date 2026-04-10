@@ -1,4 +1,4 @@
-import { prisma } from "@bisp-final-flow/db";
+import prisma from "@bisp-final-flow/db";
 
 // Список расходов компании с фильтрами
 export async function getExpenses(

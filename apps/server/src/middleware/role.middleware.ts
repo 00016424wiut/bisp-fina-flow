@@ -1,4 +1,4 @@
-import { Role } from "@bisp-final-flow/db";
+import { Role } from "@bisp-final-flow/db/generated/client";
 import type { Request, Response, NextFunction } from "express";
 
 // Проверяет роль пользователя — используй после requireAuth

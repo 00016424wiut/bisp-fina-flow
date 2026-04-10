@@ -2,7 +2,7 @@ import { Router } from "express";
 import { requireAuth } from "../../middleware/auth.middleware";
 import { requireRole } from "../../middleware/role.middleware";
 import { getExpenses, getExpensesSummary, exportExpensesCSV } from "./expenses.service";
-import { Role } from "@bisp-final-flow/db";
+import { Role } from "@bisp-final-flow/db/generated/client";
 
 const router = Router();
 

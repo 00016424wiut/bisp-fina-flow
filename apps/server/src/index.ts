@@ -11,7 +11,7 @@ import expenseRouter from "./modules/expenses/expenses.routes";
 import uploadsRouter from "./modules/uploads/uploads.routes";
 import aiSearchRouter from "./modules/venues/ai-search";
 import { fromNodeHeaders } from "better-auth/node";
-import { prisma } from "@bisp-final-flow/db";
+import prisma from "@bisp-final-flow/db";
 
 
 const app = express();

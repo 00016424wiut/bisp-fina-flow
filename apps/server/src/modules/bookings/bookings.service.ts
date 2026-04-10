@@ -1,14 +1,9 @@
-import {
-  prisma,
-  BookingStatus,
-  type Booking,
-  type BookingWithRelations,
-} from '@bisp-final-flow/db'
+import prisma from '@bisp-final-flow/db'
+import { BookingStatus } from '@bisp-final-flow/db/generated/client'
+import type { Booking } from '@bisp-final-flow/db/generated/client'
 import { notifyProvider } from "../../lib/telegram";
 
-export async function getBookingById(
-  id: string
-): Promise<BookingWithRelations | null> {
+export async function getBookingById(id: string) {
   return prisma.booking.findUnique({
     where: { id },
     include: {

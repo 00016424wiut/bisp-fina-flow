@@ -1,4 +1,4 @@
-import { prisma } from "@bisp-final-flow/db";
+import prisma from "@bisp-final-flow/db";
 
 // Shared write payload — every editable field on a venue. Used by both
 // create (where required fields are enforced by callers) and update (where

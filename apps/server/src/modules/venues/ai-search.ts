@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { prisma } from "@bisp-final-flow/db";
+import prisma from "@bisp-final-flow/db";
 import { env } from "@bisp-final-flow/env/server";
 
 const SYSTEM_PROMPT = `You are a venue matching assistant for a party booking platform.

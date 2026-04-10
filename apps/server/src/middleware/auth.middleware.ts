@@ -17,6 +17,6 @@ export async function requireAuth(
     return;
   }
 
-  req.user = session.user;
+  req.user = session.user as Express.Request["user"];
   next();
 }

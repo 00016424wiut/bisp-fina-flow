@@ -1,12 +1,12 @@
 {
   "extends": "@bisp-final-flow/config/tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@bisp-final-flow/db": ["../../packages/db/src/index.ts"]
+      "@bisp-final-flow/db": ["../../packages/db/src/index.ts"],
+      "@bisp-final-flow/db/generated/client": ["../../packages/db/prisma/generated/client.d.ts"]
     },
     "jsx": "react-jsx"
   }

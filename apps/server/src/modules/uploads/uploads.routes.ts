@@ -10,7 +10,7 @@ import multer, { type FileFilterCallback } from "multer";
 import path from "node:path";
 import fs from "node:fs";
 import crypto from "node:crypto";
-import { Role } from "@bisp-final-flow/db";
+import { Role } from "@bisp-final-flow/db/generated/client";
 import { requireAuth } from "../../middleware/auth.middleware";
 import { requireRole } from "../../middleware/role.middleware";
 
