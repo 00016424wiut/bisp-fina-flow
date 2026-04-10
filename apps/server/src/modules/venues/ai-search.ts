@@ -19,6 +19,11 @@ router.post("/", async (req, res) => {
     return;
   }
 
+  if (!env.GITHUB_MODELS_TOKEN) {
+    res.status(503).json({ error: "AI search is not configured" });
+    return;
+  }
+
   const venues = await prisma.venue.findMany({
     where: { isActive: true },
     select: {
