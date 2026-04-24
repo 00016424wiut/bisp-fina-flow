@@ -1,18 +1,27 @@
 import prisma from '../src/index'
-import dotenv from 'dotenv'
-import path from 'path'
-
-dotenv.config({ path: path.join('..', '..', 'apps', 'server', '.env') })
 
 async function main() {
-  // Сначала создаём провайдера-пользователя для seed данных
-  const provider = await prisma.user.findFirst({
+  // Find an existing provider, or create a system provider for seed data
+  let provider = await prisma.user.findFirst({
     where: { role: 'PROVIDER' }
   })
 
   if (!provider) {
-    console.log('No PROVIDER user found. Please create one first via /signup')
-    return
+    console.log('No PROVIDER user found — creating a system provider for seed data...')
+
+    const company = await prisma.company.create({
+      data: { name: 'FLOW Venues' },
+    })
+
+    provider = await prisma.user.create({
+      data: {
+        id: 'system-provider',
+        name: 'FLOW Venues',
+        email: 'venues@flow.local',
+        role: 'PROVIDER',
+        companyId: company.id,
+      },
+    })
   }
 
   const venues = [
@@ -33,15 +42,25 @@ async function main() {
     { name: 'Sweet Box', category: 'GIFTS' as const, pricePerHour: 20, capacity: 1, address: 'Amir Temur 2', description: 'Авторские шоколадные наборы ручной работы. Персонализированные коробки.', hours: '9:00 - 20:00', rating: 4.6, tags: ['Chocolate'], menus: [] },
     { name: 'Flower Lab', category: 'GIFTS' as const, pricePerHour: 40, capacity: 1, address: 'Navoi 1', description: 'Флористическая лаборатория с авторскими букетами. Живые и сухоцветы.', hours: '8:00 - 20:00', rating: 4.8, tags: ['Flowers'], menus: [] },
   ]
-  
 
   for (const venue of venues) {
-    await prisma.venue.create({
-      data: {
+    // Use upsert to avoid duplicates on re-runs
+    await prisma.venue.upsert({
+      where: {
+        // Find by unique combination of name + category
+        id: `seed-${venue.name.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+      update: {
         ...venue,
         providerId: provider.id,
         isActive: true,
-      }
+      },
+      create: {
+        id: `seed-${venue.name.toLowerCase().replace(/\s+/g, '-')}`,
+        ...venue,
+        providerId: provider.id,
+        isActive: true,
+      },
     })
   }
 

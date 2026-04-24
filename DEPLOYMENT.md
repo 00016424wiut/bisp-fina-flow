@@ -24,7 +24,7 @@ Railway creates a `DATABASE_URL` variable automatically. Reference it in your ot
 - Root directory: `/` (monorepo root — needed so Railway sees all workspaces)
 - Build command:
   ```
-  npm install && npm run db:generate && npm run db:deploy && npm run build
+  npm install && npm run db:generate && npm run db:deploy && npm run db:seed && npm run build
   ```
 - Start command:
   ```

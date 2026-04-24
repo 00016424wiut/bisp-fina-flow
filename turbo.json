@@ -66,6 +66,9 @@
     },
     "db:down": {
       "cache": false
+    },
+    "seed": {
+      "cache": false
     }
   }
 }

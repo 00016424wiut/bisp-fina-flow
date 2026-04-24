@@ -24,6 +24,7 @@
     "db:watch": "turbo -F @bisp-final-flow/db db:watch",
     "db:stop": "turbo -F @bisp-final-flow/db db:stop",
     "db:down": "turbo -F @bisp-final-flow/db db:down",
+    "db:seed": "turbo -F @bisp-final-flow/db seed",
     "prepare": "husky"
   },
   "dependencies": {
