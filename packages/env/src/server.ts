@@ -12,6 +12,7 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
     TELEGRAM_BOT_TOKEN: z.string().min(1),
     GITHUB_MODELS_TOKEN: z.string().min(1).optional(),
+    RESEND_API_KEY: z.string().min(1).optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,

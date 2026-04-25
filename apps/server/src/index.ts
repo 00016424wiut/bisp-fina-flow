@@ -10,6 +10,7 @@ import bookingsRouter from "./modules/bookings/bookings.routes";
 import expenseRouter from "./modules/expenses/expenses.routes";
 import uploadsRouter from "./modules/uploads/uploads.routes";
 import aiSearchRouter from "./modules/venues/ai-search";
+import contactRouter from "./modules/contact/contact.routes";
 import { fromNodeHeaders } from "better-auth/node";
 import prisma from "@bisp-final-flow/db";
 
@@ -34,6 +35,7 @@ app.use(express.json());
 app.use("/uploads", express.static(path.resolve("uploads")));
 
 app.use("/api/uploads", uploadsRouter);
+app.use("/api/contact", contactRouter);
 app.use("/api/expenses", expenseRouter);
 
 app.get("/", (_req, res) => {

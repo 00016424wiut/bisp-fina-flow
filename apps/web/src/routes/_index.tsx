@@ -37,7 +37,9 @@ export default function Home() {
   const [guests, setGuests] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
   const { data: session } = authClient.useSession();
   const navigate = useNavigate();
 
@@ -400,7 +402,7 @@ export default function Home() {
               style={{ border: "none", borderBottom: "1px solid #d4a0a4", padding: "10px 0", fontSize: "13px", fontFamily: "Georgia, serif", background: "transparent", outline: "none", color: "#2c2c2c" }} />
             <input placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)}
               style={{ border: "none", borderBottom: "1px solid #d4a0a4", padding: "10px 0", fontSize: "13px", fontFamily: "Georgia, serif", background: "transparent", outline: "none", color: "#2c2c2c" }} />
-            <input placeholder="Phone number"
+            <input placeholder="Phone number" value={phone} onChange={e => setPhone(e.target.value)}
               style={{ border: "none", borderBottom: "1px solid #d4a0a4", padding: "10px 0", fontSize: "13px", fontFamily: "Georgia, serif", background: "transparent", outline: "none", color: "#2c2c2c" }} />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -414,23 +416,39 @@ export default function Home() {
               }} />
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
               <button
-                onClick={() => {
+                disabled={sending}
+                onClick={async () => {
                   if (!name.trim() || !email.trim() || !message.trim()) {
                     toast.error("Please fill in your name, email and message");
                     return;
                   }
-                  toast.success("Thank you! We'll get back to you soon.");
-                  setName("");
-                  setEmail("");
-                  setMessage("");
+                  setSending(true);
+                  try {
+                    const res = await fetch(apiUrl("/api/contact"), {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ name, email, phone, message }),
+                    });
+                    if (!res.ok) throw new Error();
+                    toast.success("Thank you! We'll get back to you soon.");
+                    setName("");
+                    setEmail("");
+                    setPhone("");
+                    setMessage("");
+                  } catch {
+                    toast.error("Failed to send message. Please try again.");
+                  } finally {
+                    setSending(false);
+                  }
                 }}
                 style={{
                   background: "#d9d9d9", color: "#2c2c2c",
                   border: "1px solid #b0b0b0", borderRadius: "4px",
                   padding: "10px 100px", fontSize: "13px",
-                  fontFamily: "Georgia, serif", cursor: "pointer",
+                  fontFamily: "Georgia, serif", cursor: sending ? "wait" : "pointer",
+                  opacity: sending ? 0.7 : 1,
                 }}>
-                Submit
+                {sending ? "Sending..." : "Submit"}
               </button>
             </div>
           </div>
