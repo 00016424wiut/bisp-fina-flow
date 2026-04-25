@@ -1,4 +1,8 @@
-import prisma from '../src/index'
+import { PrismaClient } from '../prisma/generated/client.js'
+import { PrismaPg } from '@prisma/adapter-pg'
+
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
+const prisma = new PrismaClient({ adapter })
 
 async function main() {
   // Find an existing provider, or create a system provider for seed data
@@ -44,10 +48,8 @@ async function main() {
   ]
 
   for (const venue of venues) {
-    // Use upsert to avoid duplicates on re-runs
     await prisma.venue.upsert({
       where: {
-        // Find by unique combination of name + category
         id: `seed-${venue.name.toLowerCase().replace(/\s+/g, '-')}`,
       },
       update: {
