@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { apiUrl } from "@/lib/api";
+import { toast } from "sonner";
 
 type AiSearchResult = {
   id: string;
@@ -14,14 +15,14 @@ type AiSearchResult = {
   rating: number | null;
 };
 
-const venues = [
-  { id: 1, name: "Rooftop Lounge", category: "Outdoor", price: 1_200_000, capacity: 50, rating: 4.8 },
-  { id: 2, name: "Private Loft", category: "Indoor", price: 950_000, capacity: 30, rating: 4.6 },
-  { id: 3, name: "Garden Terrace", category: "Outdoor", price: 800_000, capacity: 80, rating: 4.9 },
-  { id: 4, name: "Industrial Space", category: "Indoor", price: 1_500_000, capacity: 200, rating: 4.7 },
-];
-
-const fmtUZS = (n: number) => `${n.toLocaleString()} UZS`;
+type Venue = {
+  id: string;
+  name: string;
+  category: string;
+  pricePerHour: string;
+  capacity: number | null;
+  rating: number | null;
+};
 
 const Divider = () => (
   <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "0 48px" }}>
@@ -40,10 +41,18 @@ export default function Home() {
   const { data: session } = authClient.useSession();
   const navigate = useNavigate();
 
+  const [trendingVenues, setTrendingVenues] = useState<Venue[]>([]);
   const [vibeQuery, setVibeQuery] = useState("");
   const [vibeResults, setVibeResults] = useState<AiSearchResult[]>([]);
   const [vibeLoading, setVibeLoading] = useState(false);
   const [vibeSearched, setVibeSearched] = useState(false);
+
+  useEffect(() => {
+    fetch(apiUrl("/api/venues"), { credentials: "include" })
+      .then(res => res.json())
+      .then(data => setTrendingVenues(Array.isArray(data) ? data.slice(0, 4) : []))
+      .catch(() => {});
+  }, []);
 
   const handleVibeSearch = async () => {
     if (!vibeQuery.trim()) return;
@@ -315,12 +324,14 @@ export default function Home() {
             </h2>
           </div>
         </div>
-        <button style={{
-          background: "transparent", color: "#2c2c2c",
-          border: "1px solid #2c2c2c", borderRadius: "30px",
-          padding: "12px 48px", fontSize: "13px",
-          fontFamily: "Georgia, serif", cursor: "pointer",
-        }}>
+        <button
+          onClick={() => navigate(session ? "/dashboard" : "/onboarding")}
+          style={{
+            background: "transparent", color: "#2c2c2c",
+            border: "1px solid #2c2c2c", borderRadius: "30px",
+            padding: "12px 48px", fontSize: "13px",
+            fontFamily: "Georgia, serif", cursor: "pointer",
+          }}>
           Start Hosting
         </button>
       </div>
@@ -335,35 +346,45 @@ export default function Home() {
       <section style={{ padding: "0 48px 60px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "24px" }}>
           <h2 style={{ fontSize: "20px", fontWeight: 400, color: "#2c2c2c", margin: 0 }}>Trending Combos</h2>
-          <Link to="/venues" style={{ fontSize: "13px", color: "#c4848a", textDecoration: "none" }}>View all →</Link>
+          <Link to="/restaurants" style={{ fontSize: "13px", color: "#c4848a", textDecoration: "none" }}>View all →</Link>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
-          {venues.map(venue => (
-            <div key={venue.id} style={{
-              background: "white", border: "1px solid #e8d4d6",
-              borderRadius: "8px", overflow: "hidden", cursor: "pointer",
-            }}>
+          {trendingVenues.map(venue => (
+            <Link
+              key={venue.id}
+              to={`/${categorySlug(venue.category)}/${venue.id}`}
+              style={{ textDecoration: "none" }}
+            >
               <div style={{
-                height: "140px",
-                background: "linear-gradient(135deg, #f0dde0 0%, #e8c4c8 100%)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <span style={{ fontSize: "28px", opacity: 0.3 }}>◈</span>
-              </div>
-              <div style={{ padding: "12px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
-                  <span style={{ fontSize: "14px", color: "#2c2c2c" }}>{venue.name}</span>
-                  <span style={{ fontSize: "11px", color: "#c4848a" }}>★ {venue.rating}</span>
+                background: "white", border: "1px solid #e8d4d6",
+                borderRadius: "8px", overflow: "hidden", cursor: "pointer",
+                transition: "box-shadow 0.2s",
+              }}
+                onMouseEnter={e => (e.currentTarget.style.boxShadow = "0 4px 16px rgba(212,160,164,0.2)")}
+                onMouseLeave={e => (e.currentTarget.style.boxShadow = "none")}
+              >
+                <div style={{
+                  height: "140px",
+                  background: "linear-gradient(135deg, #f0dde0 0%, #e8c4c8 100%)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <span style={{ fontSize: "28px", opacity: 0.3 }}>◈</span>
                 </div>
-                <p style={{ fontSize: "12px", color: "#a0a0a0", margin: "0 0 8px" }}>
-                  {venue.category} · {venue.capacity} guests
-                </p>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "13px", color: "#2c2c2c" }}>{fmtUZS(venue.price)}<span style={{ color: "#a0a0a0", fontSize: "11px" }}>/hr</span></span>
-                  <span style={{ fontSize: "11px", background: "#f0dde0", color: "#c4848a", padding: "3px 10px", borderRadius: "12px" }}>Book</span>
+                <div style={{ padding: "12px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "4px" }}>
+                    <span style={{ fontSize: "14px", color: "#2c2c2c" }}>{venue.name}</span>
+                    {venue.rating && <span style={{ fontSize: "11px", color: "#c4848a" }}>★ {venue.rating}</span>}
+                  </div>
+                  <p style={{ fontSize: "12px", color: "#a0a0a0", margin: "0 0 8px" }}>
+                    {categorySlug(venue.category).replace(/-/g, " ")} {venue.capacity ? `· ${venue.capacity} guests` : ""}
+                  </p>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "13px", color: "#2c2c2c" }}>{Number(venue.pricePerHour).toLocaleString()} UZS<span style={{ color: "#a0a0a0", fontSize: "11px" }}>/hr</span></span>
+                    <span style={{ fontSize: "11px", background: "#f0dde0", color: "#c4848a", padding: "3px 10px", borderRadius: "12px" }}>Book</span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
@@ -392,12 +413,23 @@ export default function Home() {
                 resize: "none", height: "160px",
               }} />
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button style={{
-                background: "#d9d9d9", color: "#2c2c2c",
-                border: "1px solid #b0b0b0", borderRadius: "4px",
-                padding: "10px 100px", fontSize: "13px",
-                fontFamily: "Georgia, serif", cursor: "pointer",
-              }}>
+              <button
+                onClick={() => {
+                  if (!name.trim() || !email.trim() || !message.trim()) {
+                    toast.error("Please fill in your name, email and message");
+                    return;
+                  }
+                  toast.success("Thank you! We'll get back to you soon.");
+                  setName("");
+                  setEmail("");
+                  setMessage("");
+                }}
+                style={{
+                  background: "#d9d9d9", color: "#2c2c2c",
+                  border: "1px solid #b0b0b0", borderRadius: "4px",
+                  padding: "10px 100px", fontSize: "13px",
+                  fontFamily: "Georgia, serif", cursor: "pointer",
+                }}>
                 Submit
               </button>
             </div>
