@@ -424,6 +424,7 @@ export default function Home() {
                   }
                   setSending(true);
                   try {
+                    console.log("API_URL:", apiUrl("/api/contact"))
                     const res = await fetch(apiUrl("/api/contact"), {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
