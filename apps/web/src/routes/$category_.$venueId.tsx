@@ -343,7 +343,8 @@ export default function VenuePage() {
               <input
                 placeholder="Do you have any questions?"
                 value={question}
-                onChange={e => setQuestion(e.target.value)}
+                onChange={e => { setQuestion(e.target.value); if (!chatOpen) setChatOpen(true); }}
+                onFocus={() => { if (!chatOpen) setChatOpen(true); }}
                 onKeyDown={e => e.key === "Enter" && handleChatSend()}
                 style={{
                   flex: 1, border: "none", background: "transparent",
