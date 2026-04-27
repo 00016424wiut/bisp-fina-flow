@@ -21,6 +21,13 @@ export default function VenuePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setLoading(true);
+    setVenue(null);
+    setChatMessages([]);
+    setChatOpen(false);
+    setQuestion("");
+    setBookingOpen(false);
+    setBookingDone(false);
     fetch(apiUrl(`/api/venues/${venueId}`))
       .then(r => r.json())
       .then(data => { setVenue(data); setLoading(false); })
@@ -251,9 +258,16 @@ export default function VenuePage() {
             <p style={{ fontSize: "13px", color: "#5a5a5a", margin: 0 }}>
               Capacity: {venue.minGuests ?? 1}–{venue.maxGuests ?? venue.capacity ?? "—"} guests
             </p>
-            <p style={{ fontSize: "13px", color: "#5a5a5a", margin: 0 }}>
-              Average check: {venue.averageCheck}
-            </p>
+            {Number(venue.pricePerHour) > 0 && (
+              <p style={{ fontSize: "13px", color: "#5a5a5a", margin: 0 }}>
+                Price per hour: {Number(venue.pricePerHour).toLocaleString()} UZS
+              </p>
+            )}
+            {venue.averageCheck && (
+              <p style={{ fontSize: "13px", color: "#5a5a5a", margin: 0 }}>
+                Average check: {venue.averageCheck}
+              </p>
+            )}
           </div>
 
           {/* Теги */}

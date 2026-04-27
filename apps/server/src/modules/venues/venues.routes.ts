@@ -50,7 +50,7 @@ function validateVenueBody(body: any, requireRequired: boolean): string | null {
     if (typeof body.category !== "string") {
       return "Category is required";
     }
-    if (typeof body.pricePerHour !== "number" || body.pricePerHour <= 0) {
+    if (body.pricePerHour !== undefined && (typeof body.pricePerHour !== "number" || body.pricePerHour <= 0)) {
       return "Price per hour must be a positive number";
     }
   } else {

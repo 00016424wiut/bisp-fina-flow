@@ -20,6 +20,7 @@ type Venue = {
   name: string;
   category: string;
   pricePerHour: string;
+  averageCheck: string | null;
   capacity: number | null;
   rating: number | null;
 };
@@ -405,7 +406,17 @@ export default function Home() {
                     {categorySlug(venue.category).replace(/-/g, " ")} {venue.capacity ? `· ${venue.capacity} guests` : ""}
                   </p>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "13px", color: "#2c2c2c" }}>{Number(venue.pricePerHour).toLocaleString()} UZS<span style={{ color: "#a0a0a0", fontSize: "11px" }}>/hr</span></span>
+                    <span style={{ fontSize: "13px", color: "#2c2c2c" }}>
+                      {venue.averageCheck && <>{venue.averageCheck}</>}
+                      {Number(venue.pricePerHour) > 0 && (
+                        <span style={{ color: "#a0a0a0", fontSize: "11px" }}>
+                          {venue.averageCheck ? " · " : ""}{Number(venue.pricePerHour).toLocaleString()} UZS/hr
+                        </span>
+                      )}
+                      {!venue.averageCheck && Number(venue.pricePerHour) === 0 && (
+                        <span style={{ color: "#a0a0a0", fontSize: "11px" }}>Contact for pricing</span>
+                      )}
+                    </span>
                     <span style={{ fontSize: "11px", background: "#f0dde0", color: "#c4848a", padding: "3px 10px", borderRadius: "12px" }}>Book</span>
                   </div>
                 </div>

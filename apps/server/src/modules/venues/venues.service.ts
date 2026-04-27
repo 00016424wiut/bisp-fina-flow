@@ -40,14 +40,14 @@ export async function getVenues(filters: {
 // Создать площадку — только PROVIDER
 export async function createVenue(
   providerId: string,
-  data: VenueWriteData & { name: string; category: string; pricePerHour: number },
+  data: VenueWriteData & { name: string; category: string },
 ) {
   return prisma.venue.create({
     data: {
       name: data.name,
       description: data.description,
       category: data.category as any,
-      pricePerHour: data.pricePerHour,
+      pricePerHour: data.pricePerHour ?? 0,
       capacity: data.capacity,
       address: data.address,
       photos: data.photos ?? [],

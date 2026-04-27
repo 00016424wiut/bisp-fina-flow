@@ -102,6 +102,11 @@ function ProfileSection({ user, onUpdate }: { user: any; onUpdate: (u: any) => v
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [passwordForm, setPasswordForm] = useState({ current: "", new: "", confirm: "" });
+  const [showPasswords, setShowPasswords] = useState(false);
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
 
   // Hydrate from /api/me on mount so we always have phone + company.name even
   // if the Better-Auth session payload is stale.
@@ -122,6 +127,10 @@ function ProfileSection({ user, onUpdate }: { user: any; onUpdate: (u: any) => v
         companyName: profile.company?.name ?? "",
       });
       setError("");
+      setPasswordForm({ current: "", new: "", confirm: "" });
+      setShowPasswords(false);
+      setPasswordError("");
+      setPasswordSuccess("");
     }
   }, [editing, profile]);
 
@@ -220,6 +229,98 @@ function ProfileSection({ user, onUpdate }: { user: any; onUpdate: (u: any) => v
             </>
           )}
 
+          {/* Password change */}
+          <div style={{ borderTop: "1px solid #f0dde0", paddingTop: "16px", marginTop: "8px" }}>
+            <label style={labelStyle}>Change password</label>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div style={{ position: "relative" }}>
+                <input
+                  type={showPasswords ? "text" : "password"}
+                  value={passwordForm.current}
+                  onChange={e => setPasswordForm(p => ({ ...p, current: e.target.value }))}
+                  placeholder="Current password"
+                  style={inputStyle}
+                />
+              </div>
+              <input
+                type={showPasswords ? "text" : "password"}
+                value={passwordForm.new}
+                onChange={e => setPasswordForm(p => ({ ...p, new: e.target.value }))}
+                placeholder="New password"
+                style={inputStyle}
+              />
+              <input
+                type={showPasswords ? "text" : "password"}
+                value={passwordForm.confirm}
+                onChange={e => setPasswordForm(p => ({ ...p, confirm: e.target.value }))}
+                placeholder="Confirm new password"
+                style={inputStyle}
+              />
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowPasswords(p => !p)}
+                  style={{
+                    background: "none", border: "1px solid #e8d4d6", borderRadius: "20px",
+                    padding: "4px 12px", fontSize: "11px", fontFamily: "Georgia, serif",
+                    color: "#7a7a7a", cursor: "pointer",
+                  }}
+                >
+                  {showPasswords ? "Hide" : "Show"}
+                </button>
+                <button
+                  type="button"
+                  disabled={passwordSaving}
+                  onClick={async () => {
+                    setPasswordError("");
+                    setPasswordSuccess("");
+                    if (!passwordForm.current || !passwordForm.new) {
+                      setPasswordError("Fill in current and new password");
+                      return;
+                    }
+                    if (passwordForm.new.length < 6) {
+                      setPasswordError("New password must be at least 6 characters");
+                      return;
+                    }
+                    if (passwordForm.new !== passwordForm.confirm) {
+                      setPasswordError("Passwords do not match");
+                      return;
+                    }
+                    setPasswordSaving(true);
+                    try {
+                      const res = await authClient.changePassword({
+                        currentPassword: passwordForm.current,
+                        newPassword: passwordForm.new,
+                      });
+                      if (res.error) {
+                        setPasswordError(res.error.message || "Failed to change password");
+                      } else {
+                        setPasswordSuccess("Password changed successfully");
+                        setPasswordForm({ current: "", new: "", confirm: "" });
+                      }
+                    } catch {
+                      setPasswordError("Failed to change password");
+                    } finally {
+                      setPasswordSaving(false);
+                    }
+                  }}
+                  style={{
+                    background: "none", border: "1px solid #d4a0a4", borderRadius: "20px",
+                    padding: "4px 12px", fontSize: "11px", fontFamily: "Georgia, serif",
+                    color: "#c4848a", cursor: passwordSaving ? "wait" : "pointer",
+                  }}
+                >
+                  {passwordSaving ? "Saving..." : "Update password"}
+                </button>
+              </div>
+              {passwordError && <p style={{ fontSize: "12px", color: "#e05c5c", margin: 0 }}>{passwordError}</p>}
+              {passwordSuccess && <p style={{ fontSize: "12px", color: "#4ade80", margin: 0 }}>{passwordSuccess}</p>}
+            </div>
+            <p style={{ fontSize: "11px", color: "#a0a0a0", margin: "4px 0 0" }}>
+              Leave blank if you don't want to change your password.
+            </p>
+          </div>
+
           {error && (
             <p style={{ fontSize: "12px", color: "#e05c5c", margin: 0 }}>{error}</p>
           )}
@@ -247,6 +348,7 @@ function ProfileSection({ user, onUpdate }: { user: any; onUpdate: (u: any) => v
             { label: "Name", value: profile.name ?? "—" },
             { label: "Email", value: profile.email ?? "—" },
             { label: "Phone", value: profile.phone ?? "—" },
+            { label: "Password", value: "••••••••" },
             { label: "Role", value: profile.role === "MANAGER" ? "Manager" : profile.role === "PROVIDER" ? "Provider" : profile.role === "ADMIN" ? "Administrator" : profile.role },
             ...(isProvider
               ? [
@@ -496,6 +598,35 @@ function ProviderDashboard({ user, onUpdate }: { user: any; onUpdate: (u: any) =
                 >
                   ✎
                 </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Booking history */}
+      <div style={{ border: "1px solid #e8d4d6", borderRadius: "12px", padding: "24px", background: "white" }}>
+        <h2 style={{ fontSize: "16px", fontWeight: 400, color: "#2c2c2c", margin: "0 0 20px" }}>Booking history</h2>
+        {loading ? (
+          <p style={{ fontSize: "13px", color: "#a0a0a0" }}>Loading...</p>
+        ) : bookings.length === 0 ? (
+          <p style={{ fontSize: "13px", color: "#a0a0a0" }}>No bookings yet</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            {bookings.map(b => (
+              <div key={b.id} style={{ border: "1px solid #f0dde0", borderRadius: "8px", padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <p style={{ fontSize: "14px", color: "#2c2c2c", margin: "0 0 4px" }}>{b.venue?.name ?? "—"}</p>
+                  <p style={{ fontSize: "12px", color: "#7a7a7a", margin: 0 }}>
+                    {formatDate(b.startTime)} · {fmt(Number(b.cost))}
+                  </p>
+                </div>
+                <span style={{
+                  fontSize: "10px", padding: "3px 10px", borderRadius: "12px",
+                  background: STATUS_BG[b.status], color: STATUS_COLORS[b.status], fontWeight: 600,
+                }}>
+                  {b.status}
+                </span>
               </div>
             ))}
           </div>

@@ -5,12 +5,13 @@
 import { useEffect, useState } from "react";
 import { apiUrl } from "@/lib/api";
 import { parseAverageCheck } from "@/lib/format";
+import { categories } from "@/data/categories";
 
 export type VenueFormData = {
   name: string;
   description: string;
   category: string;
-  pricePerHour: number;
+  pricePerHour?: number;
   capacity?: number;
   minGuests?: number;
   maxGuests?: number;
@@ -33,6 +34,14 @@ type VenueFormProps = {
 };
 
 const CATEGORIES = ["RESTAURANTS", "OUTDOOR", "MASTER_CLASSES", "ACTIVITIES", "GIFTS"];
+
+const CATEGORY_SLUG: Record<string, string> = {
+  RESTAURANTS: "restaurants",
+  OUTDOOR: "outdoor",
+  MASTER_CLASSES: "master-classes",
+  ACTIVITIES: "activities",
+  GIFTS: "gifts",
+};
 
 const AMENITY_PRESETS = [
   "WiFi", "Parking", "AC", "Projector", "Sound system",
@@ -203,7 +212,7 @@ export default function VenueForm({ initialValue, saving, onSubmit, onCancel }: 
       return;
     }
     const price = parseAverageCheck(form.pricePerHour);
-    if (!price || price <= 0) {
+    if (form.pricePerHour && price <= 0) {
       setError("Price per hour must be a positive number");
       return;
     }
@@ -218,7 +227,7 @@ export default function VenueForm({ initialValue, saving, onSubmit, onCancel }: 
       name: form.name.trim(),
       description: form.description.trim(),
       category: form.category,
-      pricePerHour: price,
+      pricePerHour: price > 0 ? price : undefined,
       capacity: form.capacity ? Number(form.capacity) : undefined,
       minGuests: minG,
       maxGuests: maxG,
@@ -292,7 +301,7 @@ export default function VenueForm({ initialValue, saving, onSubmit, onCancel }: 
         <h4 style={sectionTitleStyle}>Pricing</h4>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
           <div>
-            <label style={labelStyle}>Price per hour (UZS) *</label>
+            <label style={labelStyle}>Price per hour (UZS)</label>
             <input value={form.pricePerHour}
               onChange={e => update("pricePerHour", maskMoney(e.target.value))}
               inputMode="numeric" placeholder="e.g. 50,000" style={inputStyle} />
@@ -419,11 +428,47 @@ export default function VenueForm({ initialValue, saving, onSubmit, onCancel }: 
       {/* ── Tags ───────────────────────────────────────────────── */}
       <div style={sectionStyle}>
         <h4 style={sectionTitleStyle}>Tags</h4>
+        {(() => {
+          const slug = CATEGORY_SLUG[form.category];
+          const hints = slug && categories[slug] ? categories[slug].filters : [];
+          const currentTags = form.tags ? form.tags.split(",").map(t => t.trim()).filter(Boolean) : [];
+          return hints.length > 0 ? (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+              {hints.map(hint => {
+                const active = currentTags.some(t => t.toLowerCase() === hint.toLowerCase());
+                return (
+                  <button
+                    key={hint}
+                    type="button"
+                    onClick={() => {
+                      if (active) {
+                        const filtered = currentTags.filter(t => t.toLowerCase() !== hint.toLowerCase());
+                        update("tags", filtered.join(", "));
+                      } else {
+                        update("tags", [...currentTags, hint].join(", "));
+                      }
+                    }}
+                    style={{
+                      border: `1px solid ${active ? "#2c2c2c" : "#d4a0a4"}`,
+                      background: active ? "#2c2c2c" : "transparent",
+                      color: active ? "white" : "#5a5a5a",
+                      borderRadius: "20px", padding: "5px 14px",
+                      fontSize: "11px", fontFamily: "Georgia, serif",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {hint}
+                  </button>
+                );
+              })}
+            </div>
+          ) : null;
+        })()}
         <input value={form.tags} onChange={e => update("tags", e.target.value)}
           placeholder="Comma separated, e.g. Rooftop, Romantic, Live music"
           style={inputStyle} />
         <p style={{ fontSize: "11px", color: "#a0a0a0", margin: "4px 0 0" }}>
-          Tags are short search/filter labels — not facility checklists.
+          Click suggestions above or type your own. Tags help customers find your venue.
         </p>
       </div>
 
