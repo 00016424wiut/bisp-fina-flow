@@ -1,5 +1,7 @@
 import { PrismaClient } from '../prisma/generated/client.js'
 import { PrismaPg } from '@prisma/adapter-pg'
+import { hashPassword } from 'better-auth/crypto'
+import crypto from 'node:crypto'
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
@@ -28,22 +30,34 @@ async function main() {
     })
   }
 
-  // Create admin user if none exists
+  // Create admin user with login credentials if none exists
   const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' } })
   if (!admin) {
-    console.log('No ADMIN user found — creating a system admin...')
+    console.log('No ADMIN user found — creating admin account...')
     const adminCompany = await prisma.company.create({
       data: { name: 'FLOW Admin' },
     })
-    await prisma.user.create({
+    const adminUser = await prisma.user.create({
       data: {
         id: 'system-admin',
         name: 'FLOW Admin',
-        email: 'admin@flow.local',
+        email: 'admin@flow.uz',
         role: 'ADMIN',
         companyId: adminCompany.id,
       },
     })
+    // Create better-auth account so admin can log in
+    const hashedPassword = await hashPassword('admin123')
+    await prisma.account.create({
+      data: {
+        id: crypto.randomUUID(),
+        accountId: adminUser.id,
+        providerId: 'credential',
+        userId: adminUser.id,
+        password: hashedPassword,
+      },
+    })
+    console.log('Admin account: admin@flow.uz / admin123')
   }
 
   const venues = [
