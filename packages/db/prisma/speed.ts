@@ -1,7 +1,5 @@
 import { PrismaClient } from '../prisma/generated/client.js'
 import { PrismaPg } from '@prisma/adapter-pg'
-import { hashPassword } from 'better-auth/crypto'
-import crypto from 'node:crypto'
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
@@ -30,34 +28,16 @@ async function main() {
     })
   }
 
-  // Create admin user with login credentials if none exists
+  // Promote admin@flow.com to ADMIN if they exist but aren't ADMIN yet
   const admin = await prisma.user.findFirst({ where: { email: 'admin@flow.com' } })
-  if (!admin) {
-    console.log('No ADMIN user found — creating admin account...')
-    const adminCompany = await prisma.company.create({
-      data: { name: 'FLOW Admin' },
+  if (admin && admin.role !== 'ADMIN') {
+    await prisma.user.update({
+      where: { id: admin.id },
+      data: { role: 'ADMIN' },
     })
-    const adminUser = await prisma.user.create({
-      data: {
-        id: 'system-admin',
-        name: 'FLOW Admin',
-        email: 'admin@flow.com',
-        role: 'ADMIN',
-        companyId: adminCompany.id,
-      },
-    })
-    // Create better-auth account so admin can log in
-    const hashedPassword = await hashPassword('admin123')
-    await prisma.account.create({
-      data: {
-        id: crypto.randomUUID(),
-        accountId: adminUser.id,
-        providerId: 'credential',
-        userId: adminUser.id,
-        password: hashedPassword,
-      },
-    })
-    console.log('Admin account: admin@flow.com / admin123')
+    console.log('Promoted admin@flow.com to ADMIN')
+  } else if (admin) {
+    console.log('admin@flow.com is already ADMIN')
   }
 
   const venues = [
