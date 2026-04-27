@@ -41,7 +41,7 @@ async function main() {
       data: {
         id: 'system-admin',
         name: 'FLOW Admin',
-        email: 'admin@flow.uz',
+        email: 'admin@flow.com',
         role: 'ADMIN',
         companyId: adminCompany.id,
       },
@@ -57,7 +57,7 @@ async function main() {
         password: hashedPassword,
       },
     })
-    console.log('Admin account: admin@flow.uz / admin123')
+    console.log('Admin account: admin@flow.com / admin123')
   }
 
   const venues = [
