@@ -12,8 +12,11 @@ export default function VenuePage() {
   const [activePhoto, setActivePhoto] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
   const [question, setQuestion] = useState("");
+  const [chatMessages, setChatMessages] = useState<{ role: "user" | "bot"; text: string }[]>([]);
+  const [chatLoading, setChatLoading] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [bookingDone, setBookingDone] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
   const { data: session } = authClient.useSession();
   const navigate = useNavigate();
 
@@ -23,6 +26,27 @@ export default function VenuePage() {
       .then(data => { setVenue(data); setLoading(false); })
       .catch(() => setLoading(false));
   }, [venueId]);
+
+  const handleChatSend = async () => {
+    const q = question.trim();
+    if (!q || chatLoading) return;
+    setChatMessages(prev => [...prev, { role: "user", text: q }]);
+    setQuestion("");
+    setChatLoading(true);
+    try {
+      const res = await fetch(apiUrl(`/api/venue-chat/${venueId}/chat`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q }),
+      });
+      const data = await res.json();
+      setChatMessages(prev => [...prev, { role: "bot", text: data.answer ?? data.error ?? "Sorry, something went wrong." }]);
+    } catch {
+      setChatMessages(prev => [...prev, { role: "bot", text: "Failed to connect. Please try again." }]);
+    } finally {
+      setChatLoading(false);
+    }
+  };
 
   if (loading) {
     return <div style={{ fontFamily: "Georgia, serif", padding: "48px", textAlign: "center" }}>Loading...</div>;
@@ -74,7 +98,6 @@ export default function VenuePage() {
           <span style={{ color: "#d4a0a4" }}>|</span>
           <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
             {session ? (
-              // После логина — иконки корзины и профиля
               <>
                 <button
                   onClick={() => navigate("/cart")}
@@ -82,21 +105,38 @@ export default function VenuePage() {
                 >
                   🛒
                 </button>
-                <button
-                  onClick={() => navigate("/dashboard")}
-                  style={{
-                    background: "none", border: "1px solid #e8d4d6",
-                    borderRadius: "50%", width: "32px", height: "32px",
-                    cursor: "pointer", fontSize: "14px", color: "#2c2c2c",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                  }}
-                  title="Sign out"
-                >
-                  👤
-                </button>
+                <div style={{ position: "relative" }}>
+                  <button
+                    onClick={() => setShowUserMenu(prev => !prev)}
+                    style={{
+                      background: "none", border: "1px solid #e8d4d6",
+                      borderRadius: "50%", width: "32px", height: "32px",
+                      cursor: "pointer", fontSize: "14px", color: "#2c2c2c",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}
+                  >
+                    👤
+                  </button>
+                  {showUserMenu && (
+                    <div style={{
+                      position: "absolute", top: "40px", right: 0,
+                      background: "white", border: "1px solid #e8d4d6",
+                      borderRadius: "8px", boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
+                      minWidth: "140px", zIndex: 200, overflow: "hidden",
+                    }}>
+                      <button onClick={() => { setShowUserMenu(false); navigate("/dashboard"); }}
+                        style={{ width: "100%", padding: "10px 16px", background: "none", border: "none", borderBottom: "1px solid #f0dde0", fontSize: "13px", fontFamily: "Georgia, serif", color: "#2c2c2c", cursor: "pointer", textAlign: "left" }}>
+                        Dashboard
+                      </button>
+                      <button onClick={() => { authClient.signOut().then(() => window.location.href = "/"); }}
+                        style={{ width: "100%", padding: "10px 16px", background: "none", border: "none", fontSize: "13px", fontFamily: "Georgia, serif", color: "#e05c5c", cursor: "pointer", textAlign: "left" }}>
+                        Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
               </>
             ) : (
-              // Не залогинен — Login и Sign Up
               <>
                 <Link to="/login" style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}>Login</Link>
                 <Link to="/onboarding" style={{
@@ -206,7 +246,7 @@ export default function VenuePage() {
               </p>
             )}
             <p style={{ fontSize: "13px", color: "#5a5a5a", margin: 0 }}>
-              Location: {venue.location}
+              Location: {venue.address}
             </p>
             <p style={{ fontSize: "13px", color: "#5a5a5a", margin: 0 }}>
               Capacity: {venue.minGuests ?? 1}–{venue.maxGuests ?? venue.capacity ?? "—"} guests
@@ -245,16 +285,46 @@ export default function VenuePage() {
           )}
           {(!venue.amenities || venue.amenities.length === 0) && <div style={{ marginBottom: "16px" }} />}
 
-          {/* Чат блок */}
+          {/* Chat block */}
           <div style={{
             background: "#f5f0f0", borderRadius: "12px",
             padding: "16px", marginBottom: "16px",
           }}>
             {chatOpen && (
-              <div style={{ marginBottom: "12px", minHeight: "80px" }}>
-                <p style={{ fontSize: "12px", color: "#7a7a7a", margin: 0 }}>
-                  Ask us anything about {venue.name}...
-                </p>
+              <div style={{ marginBottom: "12px", maxHeight: "240px", overflowY: "auto" }}>
+                {chatMessages.length === 0 && (
+                  <p style={{ fontSize: "12px", color: "#7a7a7a", margin: 0, fontStyle: "italic" }}>
+                    Ask anything about {venue.name} — hours, capacity, pricing, amenities...
+                  </p>
+                )}
+                {chatMessages.map((msg, i) => (
+                  <div key={i} style={{
+                    display: "flex",
+                    justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
+                    marginBottom: "8px",
+                  }}>
+                    <div style={{
+                      background: msg.role === "user" ? "#2c2c2c" : "white",
+                      color: msg.role === "user" ? "white" : "#2c2c2c",
+                      borderRadius: "12px", padding: "8px 14px",
+                      fontSize: "12px", maxWidth: "80%", lineHeight: 1.5,
+                      border: msg.role === "bot" ? "1px solid #e8d4d6" : "none",
+                    }}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                {chatLoading && (
+                  <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: "8px" }}>
+                    <div style={{
+                      background: "white", border: "1px solid #e8d4d6",
+                      borderRadius: "12px", padding: "8px 14px",
+                      fontSize: "12px", color: "#a0a0a0", fontStyle: "italic",
+                    }}>
+                      Thinking...
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -274,19 +344,40 @@ export default function VenuePage() {
                 placeholder="Do you have any questions?"
                 value={question}
                 onChange={e => setQuestion(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && handleChatSend()}
                 style={{
                   flex: 1, border: "none", background: "transparent",
                   fontSize: "12px", fontFamily: "Georgia, serif",
                   color: "#5a5a5a", outline: "none",
                 }}
               />
+              {chatOpen && question.trim() && (
+                <button
+                  onClick={handleChatSend}
+                  disabled={chatLoading}
+                  style={{
+                    background: "#2c2c2c", color: "white", border: "none",
+                    borderRadius: "50%", width: "28px", height: "28px",
+                    cursor: chatLoading ? "wait" : "pointer", fontSize: "12px",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0,
+                  }}
+                >
+                  ↑
+                </button>
+              )}
             </div>
           </div>
 
-          {/* BOOK кнопка */}
-          {/* BOOK кнопка */}
+          {/* BOOK button */}
           <button
-            onClick={() => setBookingOpen(true)}
+            onClick={() => {
+              if (!session) {
+                navigate("/login");
+                return;
+              }
+              setBookingOpen(true);
+            }}
             style={{
               width: "100%", background: "#2c2c2c", color: "white",
               border: "none", borderRadius: "30px",
@@ -295,7 +386,7 @@ export default function VenuePage() {
               letterSpacing: "0.5px",
             }}
           >
-            Book this venue
+            {session ? "Book this venue" : "Sign in to book"}
           </button>
 
           {/* Попап бронирования */}

@@ -73,11 +73,18 @@ router.patch("/:id/cancel", requireAuth, requireRole(Role.MANAGER, Role.ADMIN), 
 
 // PATCH /api/bookings/:id/confirm — PROVIDER or ADMIN
 router.patch("/:id/confirm", requireAuth, requireRole(Role.PROVIDER, Role.ADMIN), async (req, res) => {
-  const booking = await confirmBooking(
-    String(req.params.id),
-    req.user!.companyId ?? ""
-  );
-  res.json(booking);
+  try {
+    const booking = await confirmBooking(
+      String(req.params.id),
+      req.user!.id,
+      req.user!.role === Role.ADMIN
+    );
+    res.json(booking);
+  } catch (error) {
+    const message = (error as Error).message;
+    const status = message === "Forbidden" ? 403 : message === "Booking not found" ? 404 : 400;
+    res.status(status).json({ error: message });
+  }
 });
 
 export default router;

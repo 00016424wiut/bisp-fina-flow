@@ -10,6 +10,7 @@ import bookingsRouter from "./modules/bookings/bookings.routes";
 import expenseRouter from "./modules/expenses/expenses.routes";
 import uploadsRouter from "./modules/uploads/uploads.routes";
 import aiSearchRouter from "./modules/venues/ai-search";
+import venueChatRouter from "./modules/venues/venue-chat";
 import contactRouter from "./modules/contact/contact.routes";
 import { fromNodeHeaders } from "better-auth/node";
 import prisma from "@bisp-final-flow/db";
@@ -62,6 +63,7 @@ app.get("/api/me", requireAuth, async (req, res) => {
 });
 
 app.use("/api/ai-search", aiSearchRouter);
+app.use("/api/venue-chat", venueChatRouter);
 app.use("/api/venues", venuesRouter);
 app.use("/api/bookings", bookingsRouter);
 

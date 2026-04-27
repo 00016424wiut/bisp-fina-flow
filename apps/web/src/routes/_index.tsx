@@ -48,6 +48,7 @@ export default function Home() {
   const [vibeResults, setVibeResults] = useState<AiSearchResult[]>([]);
   const [vibeLoading, setVibeLoading] = useState(false);
   const [vibeSearched, setVibeSearched] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
     fetch(apiUrl("/api/venues"), { credentials: "include" })
@@ -106,29 +107,45 @@ export default function Home() {
         </div>
         <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
           {session ? (
-            // После логина — иконки корзины и профиля
             <>
               <button
-                onClick={() => navigate ( "/cart" )}
+                onClick={() => navigate("/cart")}
                 style={{ background: "none", border: "none", cursor: "pointer", fontSize: "20px", color: "#2c2c2c" }}
               >
                 🛒
               </button>
-              <button
-                onClick={() => navigate("/dashboard")}
-                style={{
-                  background: "none", border: "1px solid #e8d4d6",
-                  borderRadius: "50%", width: "32px", height: "32px",
-                  cursor: "pointer", fontSize: "14px", color: "#2c2c2c",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}
-                title="Sign out"
-              >
-                👤
-              </button>
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={() => setShowUserMenu(prev => !prev)}
+                  style={{
+                    background: "none", border: "1px solid #e8d4d6",
+                    borderRadius: "50%", width: "32px", height: "32px",
+                    cursor: "pointer", fontSize: "14px", color: "#2c2c2c",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  👤
+                </button>
+                {showUserMenu && (
+                  <div style={{
+                    position: "absolute", top: "40px", right: 0,
+                    background: "white", border: "1px solid #e8d4d6",
+                    borderRadius: "8px", boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
+                    minWidth: "140px", zIndex: 200, overflow: "hidden",
+                  }}>
+                    <button onClick={() => { setShowUserMenu(false); navigate("/dashboard"); }}
+                      style={{ width: "100%", padding: "10px 16px", background: "none", border: "none", borderBottom: "1px solid #f0dde0", fontSize: "13px", fontFamily: "Georgia, serif", color: "#2c2c2c", cursor: "pointer", textAlign: "left" }}>
+                      Dashboard
+                    </button>
+                    <button onClick={() => { authClient.signOut().then(() => window.location.href = "/"); }}
+                      style={{ width: "100%", padding: "10px 16px", background: "none", border: "none", fontSize: "13px", fontFamily: "Georgia, serif", color: "#e05c5c", cursor: "pointer", textAlign: "left" }}>
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
             </>
           ) : (
-            // Не залогинен — Login и Sign Up
             <>
               <Link to="/login" style={{ fontSize: "13px", color: "#5a5a5a", textDecoration: "none" }}>Login</Link>
               <Link to="/onboarding" style={{

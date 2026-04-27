@@ -59,9 +59,20 @@ export async function getBookedSlots(
 
 export async function confirmBooking(
   bookingId: string,
-  companyId: string
+  userId: string,
+  isAdmin = false
 ): Promise<Booking> {
   return prisma.$transaction(async (tx) => {
+    const existing = await tx.booking.findUnique({
+      where: { id: bookingId },
+      include: { venue: true },
+    });
+
+    if (!existing) throw new Error("Booking not found");
+    if (!isAdmin && existing.venue.providerId !== userId) {
+      throw new Error("Forbidden");
+    }
+
     const booking = await tx.booking.update({
       where: { id: bookingId },
       data: { status: BookingStatus.CONFIRMED },
@@ -74,7 +85,7 @@ export async function confirmBooking(
         category:    booking.venue.category,
         description: `Бронирование: ${booking.venue.name}`,
         bookingId:   booking.id,
-        companyId,
+        companyId:   booking.companyId,
       },
     })
 
