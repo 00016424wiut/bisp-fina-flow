@@ -174,12 +174,19 @@ export default function Home() {
               style={{ border: "none", outline: "none", fontSize: "13px", fontFamily: "Georgia, serif", color: "#2c2c2c", background: "transparent", width: "80px" }} />
           </div>
 
-          <button style={{
-            background: "#2c2c2c", color: "white", border: "none",
-            borderRadius: "30px", padding: "12px 28px", fontSize: "13px",
-            fontFamily: "Georgia, serif", cursor: "pointer", marginLeft: "8px",
-            whiteSpace: "nowrap",
-          }}>Let's Party</button>
+          <button
+            onClick={() => {
+              const params = new URLSearchParams();
+              if (when) params.set("when", when);
+              if (guests) params.set("guests", guests);
+              navigate(`/search${params.toString() ? `?${params}` : ""}`);
+            }}
+            style={{
+              background: "#2c2c2c", color: "white", border: "none",
+              borderRadius: "30px", padding: "12px 28px", fontSize: "13px",
+              fontFamily: "Georgia, serif", cursor: "pointer", marginLeft: "8px",
+              whiteSpace: "nowrap",
+            }}>Let's Party</button>
         </div>
 
         {/* AI Vibe Search */}

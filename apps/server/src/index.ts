@@ -36,7 +36,6 @@ app.use("/uploads", express.static(path.resolve("uploads")));
 
 app.use("/api/uploads", uploadsRouter);
 app.use("/api/contact", contactRouter);
-console.log("✅ /api/contact route registered");
 app.use("/api/expenses", expenseRouter);
 
 app.get("/", (_req, res) => {
