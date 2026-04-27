@@ -28,6 +28,24 @@ async function main() {
     })
   }
 
+  // Create admin user if none exists
+  const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' } })
+  if (!admin) {
+    console.log('No ADMIN user found — creating a system admin...')
+    const adminCompany = await prisma.company.create({
+      data: { name: 'FLOW Admin' },
+    })
+    await prisma.user.create({
+      data: {
+        id: 'system-admin',
+        name: 'FLOW Admin',
+        email: 'admin@flow.local',
+        role: 'ADMIN',
+        companyId: adminCompany.id,
+      },
+    })
+  }
+
   const venues = [
     // RESTAURANTS
     { name: 'Sky Lounge', category: 'RESTAURANTS' as const, pricePerHour: 400000, capacity: 500, address: 'Turkiston street 12A', description: 'Роскошный лаундж на крыше с панорамным видом на город. Авторская кухня, живая музыка по выходным.', hours: '9:00 - 22:00', rating: 4.5, averageCheck: '400.000 UZS', tags: ['Lounge & Bar', 'Rooftop', 'Party Mode', 'Live Music', 'Parking'], menus: [{ name: 'SkyLounge_Food_Menu_2026' }, { name: 'SkyLounge_Bar_Menu_2026' }] },

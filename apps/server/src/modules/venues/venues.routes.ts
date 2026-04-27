@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { requireAuth } from "../../middleware/auth.middleware";
 import { requireRole } from "../../middleware/role.middleware";
-import { getVenues, createVenue, updateVenue } from "./venues.service";
+import { getVenues, createVenue, updateVenue, toggleVenueActive } from "./venues.service";
 import prisma from "@bisp-final-flow/db";
 import { Role } from "@bisp-final-flow/db/generated/client";
 
@@ -17,10 +17,12 @@ router.get("/", async (req, res) => {
   res.json(venues);
 });
 
-// GET /api/venues/my — venues провайдера (ПЕРЕД /:id!)
-router.get("/my", requireAuth, requireRole(Role.PROVIDER), async (req, res) => {
+// GET /api/venues/my — venues провайдера или все для admin (ПЕРЕД /:id!)
+router.get("/my", requireAuth, requireRole(Role.PROVIDER, Role.ADMIN), async (req, res) => {
+  const isAdmin = req.user!.role === Role.ADMIN;
   const venues = await prisma.venue.findMany({
-    where: { providerId: req.user!.id },
+    where: isAdmin ? {} : { providerId: req.user!.id },
+    include: { provider: { select: { id: true, name: true, email: true } } },
     orderBy: { createdAt: "desc" },
   });
   res.json(venues);
@@ -89,11 +91,11 @@ function validateVenueBody(body: any, requireRequired: boolean): string | null {
   return null;
 }
 
-// POST /api/venues — только PROVIDER создаёт площадку
+// POST /api/venues — PROVIDER или ADMIN создаёт площадку
 router.post(
   "/",
   requireAuth,
-  requireRole(Role.PROVIDER),
+  requireRole(Role.PROVIDER, Role.ADMIN),
   async (req, res) => {
     const error = validateVenueBody(req.body, true);
     if (error) {
@@ -105,11 +107,27 @@ router.post(
   }
 );
 
-// PATCH /api/venues/:id — провайдер редактирует свою площадку
+// PATCH /api/venues/:id/toggle-active — ADMIN toggles venue active status
+router.patch(
+  "/:id/toggle-active",
+  requireAuth,
+  requireRole(Role.ADMIN),
+  async (req, res) => {
+    try {
+      const venue = await toggleVenueActive(req.params.id);
+      res.json(venue);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed";
+      res.status(message === "Venue not found" ? 404 : 500).json({ error: message });
+    }
+  },
+);
+
+// PATCH /api/venues/:id — провайдер или admin редактирует площадку
 router.patch(
   "/:id",
   requireAuth,
-  requireRole(Role.PROVIDER),
+  requireRole(Role.PROVIDER, Role.ADMIN),
   async (req, res) => {
     const error = validateVenueBody(req.body, false);
     if (error) {
@@ -117,8 +135,9 @@ router.patch(
       return;
     }
     const id = String(req.params.id);
+    const isAdmin = req.user!.role === Role.ADMIN;
     try {
-      const venue = await updateVenue(id, req.user!.id, req.body);
+      const venue = await updateVenue(id, req.user!.id, req.body, isAdmin);
       res.json(venue);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Update failed";

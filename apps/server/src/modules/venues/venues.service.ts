@@ -70,12 +70,13 @@ export async function updateVenue(
   venueId: string,
   providerId: string,
   data: VenueWriteData,
+  isAdmin = false,
 ) {
   const existing = await prisma.venue.findUnique({ where: { id: venueId } });
   if (!existing) {
     throw new Error("Venue not found");
   }
-  if (existing.providerId !== providerId) {
+  if (!isAdmin && existing.providerId !== providerId) {
     throw new Error("Forbidden");
   }
 
@@ -101,5 +102,14 @@ export async function updateVenue(
   return prisma.venue.update({
     where: { id: venueId },
     data: update,
+  });
+}
+
+export async function toggleVenueActive(venueId: string) {
+  const venue = await prisma.venue.findUnique({ where: { id: venueId } });
+  if (!venue) throw new Error("Venue not found");
+  return prisma.venue.update({
+    where: { id: venueId },
+    data: { isActive: !venue.isActive },
   });
 }

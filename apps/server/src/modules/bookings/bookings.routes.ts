@@ -24,10 +24,11 @@ router.get("/my", requireAuth, async (req, res) => {
   res.json(bookings);
 });
 
-// GET /api/bookings/provider — только PROVIDER
-router.get("/provider", requireAuth, requireRole(Role.PROVIDER), async (req, res) => {
+// GET /api/bookings/provider — PROVIDER or ADMIN
+router.get("/provider", requireAuth, requireRole(Role.PROVIDER, Role.ADMIN), async (req, res) => {
+  const isAdmin = req.user!.role === Role.ADMIN;
   const bookings = await prisma.booking.findMany({
-    where: { venue: { providerId: req.user!.id } },
+    where: isAdmin ? {} : { venue: { providerId: req.user!.id } },
     include: { venue: true, manager: true },
     orderBy: { createdAt: "desc" },
   });
@@ -44,8 +45,8 @@ router.get("/:id", requireAuth, async (req, res) => {
   res.json(booking);
 });
 
-// POST /api/bookings — только MANAGER
-router.post("/", requireAuth, requireRole(Role.MANAGER), async (req, res) => {
+// POST /api/bookings — MANAGER or ADMIN
+router.post("/", requireAuth, requireRole(Role.MANAGER, Role.ADMIN), async (req, res) => {
   try {
     const booking = await createBooking(
       req.user!.id,
@@ -58,8 +59,8 @@ router.post("/", requireAuth, requireRole(Role.MANAGER), async (req, res) => {
   }
 });
 
-// PATCH /api/bookings/:id/cancel — только MANAGER, только своё бронирование
-router.patch("/:id/cancel", requireAuth, requireRole(Role.MANAGER), async (req, res) => {
+// PATCH /api/bookings/:id/cancel — MANAGER or ADMIN
+router.patch("/:id/cancel", requireAuth, requireRole(Role.MANAGER, Role.ADMIN), async (req, res) => {
   try {
     const booking = await cancelBooking(String(req.params.id), req.user!.id);
     res.json(booking);
@@ -70,8 +71,8 @@ router.patch("/:id/cancel", requireAuth, requireRole(Role.MANAGER), async (req, 
   }
 });
 
-// PATCH /api/bookings/:id/confirm — только PROVIDER
-router.patch("/:id/confirm", requireAuth, requireRole(Role.PROVIDER), async (req, res) => {
+// PATCH /api/bookings/:id/confirm — PROVIDER or ADMIN
+router.patch("/:id/confirm", requireAuth, requireRole(Role.PROVIDER, Role.ADMIN), async (req, res) => {
   const booking = await confirmBooking(
     String(req.params.id),
     req.user!.companyId ?? ""

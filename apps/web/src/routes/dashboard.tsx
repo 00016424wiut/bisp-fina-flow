@@ -247,7 +247,7 @@ function ProfileSection({ user, onUpdate }: { user: any; onUpdate: (u: any) => v
             { label: "Name", value: profile.name ?? "—" },
             { label: "Email", value: profile.email ?? "—" },
             { label: "Phone", value: profile.phone ?? "—" },
-            { label: "Role", value: profile.role === "MANAGER" ? "Manager" : profile.role === "PROVIDER" ? "Provider" : profile.role },
+            { label: "Role", value: profile.role === "MANAGER" ? "Manager" : profile.role === "PROVIDER" ? "Provider" : profile.role === "ADMIN" ? "Administrator" : profile.role },
             ...(isProvider
               ? [
                   { label: "Business", value: profile.company?.name ?? "—" },
@@ -505,6 +505,176 @@ function ProviderDashboard({ user, onUpdate }: { user: any; onUpdate: (u: any) =
   );
 }
 
+// ── ADMIN DASHBOARD ─────────────────────────────────────────
+function AdminDashboard({ user, onUpdate }: { user: any; onUpdate: (u: any) => void }) {
+  const [venues, setVenues] = useState<Venue[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingVenue, setEditingVenue] = useState<Venue | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    Promise.all([
+      fetch(apiUrl("/api/venues/my"), { credentials: "include" }).then(r => r.json()),
+      fetch(apiUrl("/api/bookings/provider"), { credentials: "include" }).then(r => r.json()),
+    ]).then(([v, b]) => {
+      if (Array.isArray(v)) setVenues(v);
+      if (Array.isArray(b)) setBookings(b);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, []);
+
+  const handleToggleActive = async (venueId: string) => {
+    const res = await fetch(apiUrl(`/api/venues/${venueId}/toggle-active`), {
+      method: "PATCH", credentials: "include",
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setVenues(prev => prev.map(v => v.id === updated.id ? { ...v, isActive: updated.isActive } : v));
+    }
+  };
+
+  const handleConfirmBooking = async (bookingId: string) => {
+    const res = await fetch(apiUrl(`/api/bookings/${bookingId}/confirm`), {
+      method: "PATCH", credentials: "include",
+    });
+    if (res.ok) {
+      setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, status: "CONFIRMED" as const } : b));
+    }
+  };
+
+  const handleSubmitVenue = async (data: VenueFormData) => {
+    if (!editingVenue) return;
+    setSaving(true);
+    try {
+      const res = await fetch(apiUrl(`/api/venues/${editingVenue.id}`), {
+        method: "PATCH", credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (res.ok) {
+        const venue: Venue = await res.json();
+        setVenues(prev => prev.map(v => v.id === venue.id ? venue : v));
+        setEditingVenue(null);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        alert(err.error || "Failed to save venue");
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const totalBookings = bookings.length;
+  const confirmed = bookings.filter(b => b.status === "CONFIRMED").length;
+  const pending = bookings.filter(b => b.status === "PENDING");
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+      <ProfileSection user={user} onUpdate={onUpdate} />
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
+        {[
+          { label: "Total venues", value: venues.length },
+          { label: "Active venues", value: venues.filter(v => v.isActive).length },
+          { label: "Total bookings", value: totalBookings },
+          { label: "Confirmed", value: confirmed },
+        ].map(stat => (
+          <div key={stat.label} style={{ border: "1px solid #e8d4d6", borderRadius: "12px", padding: "20px", background: "white", textAlign: "center" }}>
+            <p style={{ fontSize: "24px", color: "#2c2c2c", margin: "0 0 4px" }}>{stat.value}</p>
+            <p style={{ fontSize: "11px", color: "#a0a0a0", margin: 0, textTransform: "uppercase", letterSpacing: "1px" }}>{stat.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Pending bookings */}
+      <div style={{ border: "1px solid #e8d4d6", borderRadius: "12px", padding: "24px", background: "white" }}>
+        <h2 style={{ fontSize: "16px", fontWeight: 400, color: "#2c2c2c", margin: "0 0 20px" }}>Pending requests</h2>
+        {pending.length === 0 ? (
+          <p style={{ fontSize: "13px", color: "#a0a0a0" }}>No pending requests</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            {pending.map(b => (
+              <div key={b.id} style={{ border: "1px solid #f7b731", borderRadius: "8px", padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(247,183,49,0.05)" }}>
+                <div>
+                  <p style={{ fontSize: "14px", color: "#2c2c2c", margin: "0 0 4px" }}>{b.venue?.name ?? "—"}</p>
+                  <p style={{ fontSize: "12px", color: "#7a7a7a", margin: 0 }}>{formatDate(b.startTime)} · {fmt(Number(b.cost))}</p>
+                </div>
+                <button onClick={() => handleConfirmBooking(b.id)} style={{
+                  background: "#2c2c2c", color: "white", border: "none",
+                  borderRadius: "20px", padding: "8px 20px", fontSize: "12px",
+                  fontFamily: "Georgia, serif", cursor: "pointer",
+                }}>Confirm</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* All venues management */}
+      <div style={{ border: "1px solid #e8d4d6", borderRadius: "12px", padding: "24px", background: "white" }}>
+        <h2 style={{ fontSize: "16px", fontWeight: 400, color: "#2c2c2c", margin: "0 0 20px" }}>All venues</h2>
+
+        {editingVenue && (
+          <div style={{ marginBottom: "20px" }}>
+            <VenueForm
+              initialValue={editingVenue}
+              saving={saving}
+              onSubmit={handleSubmitVenue}
+              onCancel={() => setEditingVenue(null)}
+            />
+          </div>
+        )}
+
+        {loading ? (
+          <p style={{ fontSize: "13px", color: "#a0a0a0" }}>Loading...</p>
+        ) : venues.length === 0 ? (
+          <p style={{ fontSize: "13px", color: "#a0a0a0" }}>No venues found</p>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            {venues.map(venue => (
+              <div key={venue.id} style={{ border: "1px solid #f0dde0", borderRadius: "8px", padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
+                    <p style={{ fontSize: "14px", color: "#2c2c2c", margin: 0 }}>{venue.name}</p>
+                    <span style={{ fontSize: "10px", padding: "2px 8px", borderRadius: "12px", background: venue.isActive ? "rgba(74,222,128,0.1)" : "rgba(224,92,92,0.1)", color: venue.isActive ? "#4ade80" : "#e05c5c" }}>
+                      {venue.isActive ? "Active" : "Inactive"}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: "12px", color: "#7a7a7a", margin: 0 }}>
+                    {venue.category} · {venue.address} · {fmt(Number(venue.pricePerHour))}/hr
+                  </p>
+                </div>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <button
+                    onClick={() => setEditingVenue(venue)}
+                    title="Edit venue"
+                    style={{
+                      background: "none", border: "1px solid #e8d4d6",
+                      borderRadius: "50%", width: "32px", height: "32px",
+                      cursor: "pointer", color: "#7a7a7a", fontSize: "14px",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}
+                  >✎</button>
+                  <button
+                    onClick={() => handleToggleActive(venue.id)}
+                    title={venue.isActive ? "Deactivate" : "Activate"}
+                    style={{
+                      background: "none", border: "1px solid #e8d4d6",
+                      borderRadius: "20px", padding: "4px 12px",
+                      fontSize: "11px", fontFamily: "Georgia, serif",
+                      cursor: "pointer", color: venue.isActive ? "#e05c5c" : "#4ade80",
+                    }}
+                  >{venue.isActive ? "Deactivate" : "Activate"}</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── MAIN DASHBOARD ───────────────────────────────────────────
 export default function Dashboard() {
   const { data: session, isPending } = authClient.useSession();
@@ -548,7 +718,7 @@ export default function Dashboard() {
               Welcome, {user?.name}
             </h1>
             <p style={{ fontSize: "13px", color: "#a0a0a0", margin: 0 }}>
-              {role === "MANAGER" ? "Manager account" : role === "PROVIDER" ? "Provider account" : ""}
+              {role === "MANAGER" ? "Manager account" : role === "PROVIDER" ? "Provider account" : role === "ADMIN" ? "Administrator" : ""}
             </p>
           </div>
           <button
@@ -561,6 +731,7 @@ export default function Dashboard() {
 
         {role === "MANAGER" && <ManagerDashboard user={user} onUpdate={setUser} />}
         {role === "PROVIDER" && <ProviderDashboard user={user} onUpdate={setUser} />}
+        {role === "ADMIN" && <AdminDashboard user={user} onUpdate={setUser} />}
       </div>
     </div>
   );
