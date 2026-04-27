@@ -31,7 +31,7 @@ async function main() {
   }
 
   // Create admin user with login credentials if none exists
-  const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' } })
+  const admin = await prisma.user.findFirst({ where: { email: 'admin@flow.com' } })
   if (!admin) {
     console.log('No ADMIN user found — creating admin account...')
     const adminCompany = await prisma.company.create({
