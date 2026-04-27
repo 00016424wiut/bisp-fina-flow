@@ -50,15 +50,15 @@ function validateVenueBody(body: any, requireRequired: boolean): string | null {
     if (typeof body.category !== "string") {
       return "Category is required";
     }
-    if (body.pricePerHour !== undefined && (typeof body.pricePerHour !== "number" || body.pricePerHour <= 0)) {
-      return "Price per hour must be a positive number";
+    if (body.pricePerHour !== undefined && body.pricePerHour !== null && (typeof body.pricePerHour !== "number" || body.pricePerHour < 0)) {
+      return "Price per hour cannot be negative";
     }
   } else {
     if (body.name !== undefined && (typeof body.name !== "string" || body.name.trim().length < 2)) {
       return "Name must be at least 2 characters";
     }
-    if (body.pricePerHour !== undefined && (typeof body.pricePerHour !== "number" || body.pricePerHour <= 0)) {
-      return "Price per hour must be a positive number";
+    if (body.pricePerHour !== undefined && body.pricePerHour !== null && (typeof body.pricePerHour !== "number" || body.pricePerHour < 0)) {
+      return "Price per hour cannot be negative";
     }
   }
   if (body.minGuests !== undefined && body.minGuests !== null) {

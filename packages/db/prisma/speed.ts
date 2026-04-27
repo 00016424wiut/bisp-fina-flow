@@ -60,18 +60,20 @@ async function main() {
   ]
 
   for (const venue of venues) {
+    const { menus, ...venueData } = venue
     await prisma.venue.upsert({
       where: {
         id: `seed-${venue.name.toLowerCase().replace(/\s+/g, '-')}`,
       },
       update: {
-        ...venue,
+        ...venueData,
         providerId: provider.id,
         isActive: true,
+        // photos and menuUrl are NOT included here — preserves uploads from the site
       },
       create: {
         id: `seed-${venue.name.toLowerCase().replace(/\s+/g, '-')}`,
-        ...venue,
+        ...venueData,
         providerId: provider.id,
         isActive: true,
       },

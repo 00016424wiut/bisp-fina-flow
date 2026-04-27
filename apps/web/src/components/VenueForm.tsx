@@ -212,8 +212,8 @@ export default function VenueForm({ initialValue, saving, onSubmit, onCancel }: 
       return;
     }
     const price = parseAverageCheck(form.pricePerHour);
-    if (form.pricePerHour && price <= 0) {
-      setError("Price per hour must be a positive number");
+    if (form.pricePerHour && price < 0) {
+      setError("Price per hour cannot be negative");
       return;
     }
     const minG = form.minGuests ? Number(form.minGuests) : undefined;
@@ -227,7 +227,7 @@ export default function VenueForm({ initialValue, saving, onSubmit, onCancel }: 
       name: form.name.trim(),
       description: form.description.trim(),
       category: form.category,
-      pricePerHour: price > 0 ? price : undefined,
+      pricePerHour: price > 0 ? price : 0,
       capacity: form.capacity ? Number(form.capacity) : undefined,
       minGuests: minG,
       maxGuests: maxG,
