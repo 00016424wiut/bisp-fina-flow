@@ -84,12 +84,27 @@ router.post("/", async (req, res) => {
   const data = (await response.json()) as {
     choices: { message: { content: string } }[];
   };
-  const text = data.choices?.[0]?.message?.content ?? "[]";
+  const raw = data.choices?.[0]?.message?.content ?? "[]";
+
+  // GPT-4o frequently wraps JSON in ```json ... ``` despite the system prompt.
+  // Strip any fences and grab the first [...] block before parsing.
+  const stripped = raw
+    .replace(/^\s*```(?:json)?\s*/i, "")
+    .replace(/\s*```\s*$/i, "")
+    .trim();
+  const arrayMatch = stripped.match(/\[[\s\S]*\]/);
+  const jsonText = arrayMatch ? arrayMatch[0] : stripped;
 
   let ranked: { id: string; score: number; reason: string }[];
   try {
-    ranked = JSON.parse(text);
+    ranked = JSON.parse(jsonText);
   } catch {
+    console.error("[ai-search] Failed to parse model output:", raw);
+    res.status(500).json({ error: "Failed to parse AI response" });
+    return;
+  }
+  if (!Array.isArray(ranked)) {
+    console.error("[ai-search] Model returned non-array:", raw);
     res.status(500).json({ error: "Failed to parse AI response" });
     return;
   }

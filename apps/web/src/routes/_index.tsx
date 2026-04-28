@@ -69,9 +69,15 @@ export default function Home() {
         credentials: "include",
         body: JSON.stringify({ query: vibeQuery.trim() }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast.error(data?.error ?? "AI search failed, please try again");
+        setVibeResults([]);
+        return;
+      }
       setVibeResults(data.results ?? []);
     } catch {
+      toast.error("Couldn't reach the server");
       setVibeResults([]);
     } finally {
       setVibeLoading(false);
